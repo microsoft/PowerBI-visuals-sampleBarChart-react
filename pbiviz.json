@@ -1,0 +1,25 @@
+{
+  "visual":{
+    "name":"reactCircleCard",
+    "displayName":"ReactCircleCard",
+    "guid":"reactCircleCardA4D95A0D437B456695DF657A6A844A43",
+    "visualClassName":"Visual",
+    "version":"1.0.0",
+    "description":"",
+    "supportUrl":"",
+    "gitHubUrl":""
+  },
+  "apiVersion":"2.3.2",
+  "author":{
+    "name":"Denis Lapatkin",
+    "email":"v-delapa@microsoft.com"
+  },
+  "assets":{
+    "icon":"assets/icon.png"
+  },
+  "externalJS":null,
+  "style": "style/visual.less",
+  "capabilities": "capabilities.json",
+  "dependencies": null,
+  "stringResources": []
+}

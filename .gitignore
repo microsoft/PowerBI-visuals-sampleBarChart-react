@@ -328,3 +328,18 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+#Power BI
+coverage
+.DS_Store
+
+.api
+dist
+typings
+
+*.dev.*
+tmp.*
+
+# Webpack statistics
+webpack\.statistics\.*html
+webpack.statistics.*.html
