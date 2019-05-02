@@ -1,48 +1,45 @@
 {
   "dataRoles": [
-      {
-          "displayName": "Measure Data",
-          "name": "measure",
-          "kind": "Measure"
-      }
+    {
+      "name": "category",
+      "displayName": "Category Data",
+      "kind": "Grouping"
+    },
+    {
+      "name": "values",
+      "displayName": "Values",
+      "kind": "Measure"
+    },
+    {
+        "displayName": "Tooltips",
+        "name": "Tooltips",
+        "kind": "Measure"
+    }
   ],
+  "dataViewMappings": [{
+    "conditions": [{
+        "category": {
+            "max": 1
+        },
+        "values": {
+            "max": 1
+        }
+    }],
+    "categorical": {
+        "categories": {
+            "for": {
+                "in": "category"
+            }
+        },
+        "values": {
+            "select": [{
+                "bind": {
+                    "to": "values"
+                }
+            }]
+        }
+    }
+  }],
   "objects": {
-      "circle": {
-          "displayName": "Circle",
-          "properties": {
-              "circleColor": {
-                  "displayName": "Color",
-                  "description": "The fill color of the circle.",
-                  "type": {
-                      "fill": {
-                          "solid": {
-                              "color": true
-                          }
-                      }
-                  }
-              },
-              "circleThickness": {
-                  "displayName": "Thickness",
-                  "description": "The circle thickness.",
-                  "type": {
-                      "numeric": true
-                  }
-              }
-          }
-      }
-  },
-  "dataViewMappings": [
-      {
-          "conditions": [
-              {
-                  "measure": {
-                      "max": 1
-                  }
-              }
-          ],
-          "single": {
-              "role": "measure"
-          }
-      }
-  ]
+  }
 }

@@ -1,22 +1,26 @@
-import React from "react";
+import * as React from "react";
+import { ChartProps, ChartEntry } from "./dataInterfaces";
+import { BarChart } from "./components/BarChart";
+import { SingleValueTable } from "./components/SingleValueTable"
 
-export interface Props {
-  textValue: string,
-  textLabel: string
-};
+export class ReactSampleBarChart extends React.Component<ChartProps>{
 
-export const CircleCard: React.FunctionComponent<Props> = (props: Props)=> {
-  const { textValue, textLabel } = props;
-  return (
-    <div className="circleCard">
-      {
-        textValue && textLabel &&
-        <p>
-          {textLabel}
-          <hr/>
-          <em>{textValue}</em>
-        </p>
-      }
-    </div>
-  )
+  private static updateCallback: (data: object) => void = null;
+
+  render(){
+      const { width, height, entries, minValue, maxValue,  measureTitle, categoryTitle } = this.props;
+
+      // const style: React.CSSProperties = { width, height };
+
+      console.warn('RENDER', this.props);
+
+      return (<div>
+        hello
+        <hr/>
+        <BarChart { ...{ width, height,  minValue, maxValue, entries, measureTitle, categoryTitle } }/>
+        {/* <SingleValueTable { ...{ width, height,  minValue, maxValue, entries, measureTitle, categoryTitle } }/> */}
+        
+        <hr/>
+      </div>)
+  }
 }

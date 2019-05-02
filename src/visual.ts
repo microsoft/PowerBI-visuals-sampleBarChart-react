@@ -29,21 +29,112 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import powerbi from "powerbi-visuals-api";
 
-import DataView = powerbi.DataView;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
+import DataView = powerbi.DataView;
+import IViewport = powerbi.IViewport;
 
-import ReactCircleCard from "./component";
+import VisualObjectInstance = powerbi.VisualObjectInstance;
+import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
+import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
+
+import { ReactSampleBarChart } from "./component";
+import { ReactVisual } from "./reactUtils";
+import { VisualSettings } from "./settings";
+import { ChartProps, ChartEntry } from "./dataInterfaces";
 import "./../style/visual.less";
 
-export class Visual implements IVisual {
+export const NBSP: string = " ";
 
-    constructor(options: VisualConstructorOptions) {
+export const mapDataView = (dataView: powerbi.DataView): Partial<ChartProps> => {
 
-    }
+  const measures = dataView.categorical.values.grouped();
+  
+  const names = dataView.categorical.categories[0].values as string[];
+  const values = measures[0].values[0].values as number[];
+ 
+  const result: ChartProps = {
+    categoryTitle: String(dataView.categorical.categories[0].source.displayName),
+    measureTitle: String(dataView.categorical.values[0].source.displayName),
+    maxValue: Number(dataView.categorical.values[0].maxLocal),
+    minValue: Number(dataView.categorical.values[0].minLocal),
+    entries: values.map((value: number, index: number) => ({ 
+      name: names[index],  
+      value,
+      displayValue: Math.min(value, values[index]),
+    })) as ChartEntry[],
+  };
+  console.log('mapDataView', measures, dataView, '=>', result);
+  
+  return result;
+}
 
-    public update(options: VisualUpdateOptions) {
+export class Visual extends ReactVisual implements IVisual {
+  private settings: VisualSettings;
+  private viewport: IViewport;
 
-    }
+  protected static shouldVisualUpdate(options: VisualUpdateOptions): boolean {
+    return true; // !!(options && options.dataViews && options.dataViews[0])
+  }
+
+  constructor(options: VisualConstructorOptions) {
+    super(options);
+    this.reactRenderer = this.createReactContainer(ReactSampleBarChart);
+    
+    this.reactMount();
+  }
+    /**
+     * initializeVisualProperties
+     * @param options VisualConstructorOptions
+     */
+  protected initializeVisualProperties(options: VisualConstructorOptions){
+    // this.host = options.host;
+    // this.target = options.element;
+  }
+
+  protected initializeReactContainers(options: VisualConstructorOptions){
+
+  }
+
+  public update(options: VisualUpdateOptions) {
+    console.warn('UPD');
+    
+    // if(Visual.shouldVisualUpdate(options)) {
+      const dataView: DataView = options.dataViews[0];
+      this.viewport = options.viewport;
+      const { width, height } = this.viewport;
+    //   const size = Math.min(width, height);
+
+      this.settings = Visual.parseSettings(dataView);
+
+      console.warn('UPDATE', dataView, mapDataView(dataView));
+      this.updateReactContainers({ width, height, ...mapDataView(dataView) })
+    // }
+  }
+ 
+  public enumerateObjectInstances(
+      options: EnumerateVisualObjectInstancesOptions
+  ): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
+
+      return VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
+  }
+  
+    /**
+     * 
+     * @param options VisualUpdateOptions
+     */
+  protected updateVisualProperties(options: VisualUpdateOptions){
+      this.settings = Visual.parseSettings(options.dataViews[0]);
+  }
+  
+  //mapper
+  protected static parseSettings(dataView: DataView): VisualSettings {
+    return VisualSettings.parse(dataView) as VisualSettings;
+  }
+
+  private clear() {
+
+  }
+
 }

@@ -25,8 +25,13 @@
  */
 
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import powerbi from 'powerbi-visuals-api';
+
+import IVisual = powerbi.extensibility.visual.IVisual;
+
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
 interface ContainerProps {
   component: React.ComponentType<any>
@@ -55,6 +60,8 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
   }
 
   public static update(newData: ContainerState) {
+    console.log('Update NEW DATA', newData);
+
       ReactContainer.subscriptions.forEach(updateCallback => {
       updateCallback(newData);
     });
@@ -71,6 +78,7 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
   }
 
   public update (newData: ContainerState) {
+    console.log('DBG instance update ', { ...this.state.data, ...newData });
     this.setState({ data: { ...this.state.data, ...newData }})
   }
 
@@ -85,10 +93,32 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
   render(){
     const props = this.state.data;
     const Component = this.props.component;
+    console.log('DBG render component', props);
     return (
       <Component {...props} />
     )
   }
 }
 
-export default ReactContainer;
+
+export abstract class ReactVisual {
+    protected reactTarget: HTMLElement;
+    protected reactRenderer: React.ComponentType;
+    protected reactContainers: React.ComponentType[];
+
+    protected updateReactContainers: (data: object) => void = ReactContainer.update;
+
+    protected createReactContainer(component: React.ComponentType) {
+        return (props: any) => React.createElement(ReactContainer, { component });
+    }
+    
+    protected reactMount(): void {
+        ReactDOM.render(React.createElement(this.reactRenderer), this.reactTarget);
+    }
+    
+    public renderer: () => React.ElementType; 
+
+    constructor(options: VisualConstructorOptions) {
+        this.reactTarget = options.element;
+    }
+}
