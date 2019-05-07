@@ -9,11 +9,6 @@
       "name": "values",
       "displayName": "Values",
       "kind": "Measure"
-    },
-    {
-        "displayName": "Tooltips",
-        "name": "Tooltips",
-        "kind": "Measure"
     }
   ],
   "dataViewMappings": [{
@@ -41,5 +36,21 @@
     }
   }],
   "objects": {
+    "barChart": {
+      "displayName": "Bar Chart",
+      "properties": {
+          "color": {
+              "displayName": "Color",
+              "description": "The fill color of bars.",
+              "type": {
+                  "fill": {
+                      "solid": {
+                          "color": true
+                      }
+                  }
+              }
+          }
+      }
+  }
   }
 }

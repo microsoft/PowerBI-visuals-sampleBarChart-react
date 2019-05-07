@@ -1,4 +1,3 @@
-
 /*
  *  Power BI Visualizations
  *
@@ -24,51 +23,15 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-import * as React from "react";
+export const LINE_COLOR = "#777777";
+export const BAR_COLOR = '#5555FF';
+ 
+export const LEGEND_HEIGHT = 25;
+export const TICKS_HEIGHT = 20;
+export const BAR_HEIGHT = 20;
+export const BAR_PADDING = 4;
 
-import { BAR_COLOR } from "../../constants";
+export const LABELS_PADDING = 10;
+export const CHART_PADDING = 30;
 
-export interface Entry {
-    name: string | number;
-    value: number;
-    width: number;
-    height: number;
-    y: number;
-}
-
-export interface Props {
-    x?: number;
-    y?: number;
-    color?: string;
-    width: number;
-    height: number;
-    entries: Entry[];
-}
-
-export const Bars: React.FunctionComponent<Props> = (
-    props: Props
-) => {
-    const { entries, width, height, color, x, y } = props;
-
-    return (
-    <g 
-        className="bar-chart-bars"
-        height={height}
-        width={width}
-        x={x || 0}
-        y={y || 0}
-    >
-        {  entries.map((entry) => 
-            <rect 
-                onClick={() => console.warn("BEEP", entry)}
-                width={entry.width}
-                height={entry.height}
-                y={entry.y}
-                x={x || 0}
-                fill={color || BAR_COLOR}
-            />
-            )
-        }
-    </g>
-    );
-}
+export const FONT_SIZE = 10;

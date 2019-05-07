@@ -108,8 +108,8 @@ export class Visual extends ReactVisual implements IVisual {
 
       this.settings = Visual.parseSettings(dataView);
 
-      console.warn('UPDATE', dataView, mapDataView(dataView));
-      this.updateReactContainers({ width, height, ...mapDataView(dataView) })
+      console.warn('UPDATE', dataView, Visual.parseSettings(dataView), mapDataView(dataView));
+      this.updateReactContainers({ width, height, color: this.settings.barChart.color, ...mapDataView(dataView) })
     // }
   }
  
