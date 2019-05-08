@@ -29,13 +29,7 @@ import {
     LABELS_PADDING, BAR_PADDING
 } from "../../constants";
 
-export interface Entry {
-    name: string | number;
-    value: number;
-    width: number;
-    height: number;
-    y: number;
-}
+import { Entry } from "./types";
 
 export interface Props {
     x?: number;
@@ -49,7 +43,8 @@ export const Labels: React.FunctionComponent<Props> = (
     props: Props
 ) => {
     const { entries, width, height, x, y } = props;
-
+    console.log('Labels', entries, height, entries.length, height / entries.length);
+    
     return (
     <g 
         className="bar-chart-labels"
@@ -58,10 +53,10 @@ export const Labels: React.FunctionComponent<Props> = (
         x={x || 0}
         y={y || 0}  
         >
-        {   entries.map((entry) =>
+        {   entries.map((entry, index) =>
                 <text
                     x={width - LABELS_PADDING}
-                    y={entry.y + entry.height - BAR_PADDING}
+                    y={(height / entries.length) * index - BAR_PADDING}
                     >
                     {entry.name}
                 </text>

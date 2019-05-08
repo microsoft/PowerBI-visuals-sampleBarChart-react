@@ -29,6 +29,8 @@ import { Grid } from "./Grid";
 import { Ticks } from "./Ticks";
 import { Labels } from "./Labels";
 
+import { DataEntry, MeasureData } from "../../dataInterfaces";
+
 import { 
     TICKS_HEIGHT,
     BAR_HEIGHT,
@@ -39,26 +41,25 @@ import {
     CHART_PADDING
 } from "../../constants";
 
-export interface Entry {
-    name: string | number;
-    value: number;
+export interface Entry extends DataEntry {
+    width?: number;
+    height?: number;
+    y: number; 
 }
 
-export interface Props {
-    width: number;
-    height: number;
-    color?: string;
-    maxValue: number;
-    minValue: number;
-    categoryTitle: string;
-    measureTitle: string;
-    entries: Entry[];
+export interface ChartProps {
+    width?: number;
+    height?: number;
+    entries?: DataEntry[];
+    measures?: MeasureData[];
+    showTooltip?: (tooltipEntry: DataEntry, x: number, y: number) => void;
+    hideTooltip?: () => void;
 }
 
-export const BarChart: React.FunctionComponent<Props> = (
-    props: Props
+export const BarChart: React.FunctionComponent<ChartProps> = (
+    props: ChartProps
 ) => {
-    const { maxValue, height, width, color } = props;
+    const { measures, height, width, showTooltip, hideTooltip } = props;
 
     if (!props.entries) return (<div>No Entries</div>);
 
@@ -67,13 +68,14 @@ export const BarChart: React.FunctionComponent<Props> = (
     const chartWidth = width - labelsWidth;
 
     let entries = props.entries.sort(
-        (a, b) => (a.value < b.value) ? 1 : (a.value > b.value ? -1 : 0)
-    ).map((entry: Entry, index) => ({
-        ...entry,
-        width: (entry.value / maxValue) * (chartWidth - CHART_PADDING),
-        height: BAR_HEIGHT - BAR_PADDING,
-        y: ( chartHeight / props.entries.length) * index
-    }));
+        (a: DataEntry, b: DataEntry) => (
+            a.dataPoints[0].value < b.dataPoints[0].value) 
+            ? 1 
+            : (a.dataPoints[0].value > b.dataPoints[0].value 
+                ? -1 
+                : 0
+            )
+        );
     
     return (
         <div className="bar-chart"> 
@@ -86,11 +88,13 @@ export const BarChart: React.FunctionComponent<Props> = (
                     width={width}
                 >
                     <Bars
-                        color={ color }
-                        entries={ entries } 
+                        entries={ entries }
+                        measures={ measures } 
                         width={ chartWidth - CHART_PADDING }
                         height={ chartHeight }
                         x={ labelsWidth }
+                        showTooltip={ showTooltip }
+                        hideTooltip={ hideTooltip }
                     />
                     <Labels
                         entries={ entries }

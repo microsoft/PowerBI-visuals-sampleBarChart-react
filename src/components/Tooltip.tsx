@@ -24,38 +24,37 @@
  *  THE SOFTWARE.
  */
 import * as React from "react";
+import { DataEntry, MeasureData, DataPoint } from "../dataInterfaces";
 
-export interface Measure {
-    name?: string;
-    displayName: string;
-    color: string;
+export interface Entry {
+    name: string | number;
+    value: string | number;
 }
 
-export interface LegendProps {
-    width?: number;
-    height?: number;
-    measures: Measure[]
+export interface Props extends DataEntry {
+    style?: React.CSSProperties;
+    categoryTitle: string;
+    categoryValue: string;
+    measures: MeasureData[];
+    x: number; 
+    y: number
 }
 
-export const Legend: React.FunctionComponent<LegendProps> = (props: LegendProps) => {
-    const { measures, width, height } = props;
-    
-    return (
-        measures &&
-        <div className="chart-legend" style={{ width, height }}>
-            { measures.map((measure) => (
-                <span className="chart-legend-item">
-                    <span 
-                        className="chart-legend-color"
-                        style={{ background: measure.color }}
-                    />
-                    <span 
-                        className="chart-legend-text"
-                    >
-                        {measure.displayName}
-                    </span>
-                </span>
-            ))}
-        </div>
-    )
-}
+export const Tooltip: React.FunctionComponent<Props> = (
+    props: Props
+) => (
+    props.measures &&
+    <div className="tooltip" style={{ top: props.y + 60, left: props.x }}>
+        <dl>
+            <dt>{ props.categoryTitle }</dt>
+            <dd>{ props.categoryValue }</dd>
+        </dl>
+        { props.dataPoints.map((dataPoint: DataPoint) => 
+            <dl>
+                <dt>{ props.measures[dataPoint.measureIndex].displayName }</dt>
+                <dd>{ dataPoint.value }</dd>
+            </dl>
+        )}
+    </div>
+);
+

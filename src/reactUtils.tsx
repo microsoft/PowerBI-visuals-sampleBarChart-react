@@ -60,7 +60,6 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
   }
 
   public static update(newData: ContainerState) {
-    console.log('Update NEW DATA', newData);
 
       ReactContainer.subscriptions.forEach(updateCallback => {
       updateCallback(newData);
@@ -78,7 +77,6 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
   }
 
   public update (newData: ContainerState) {
-    console.log('DBG instance update ', { ...this.state.data, ...newData });
     this.setState({ data: { ...this.state.data, ...newData }})
   }
 
@@ -93,7 +91,6 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
   render(){
     const props = this.state.data;
     const Component = this.props.component;
-    console.log('DBG render component', props);
     return (
       <Component {...props} />
     )

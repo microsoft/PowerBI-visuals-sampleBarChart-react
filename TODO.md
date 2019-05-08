@@ -27,3 +27,20 @@
 ## Tests
 > Provide basic tests for methods of ReactVisual
 > Provide the way to test containers
+
+==========================
+
+* Tooltips and actions
+* Highlighting (state)
+* Clustered values
+* Formatting 
+
+* Grid
+* D3 Scales
+* Data Container as HOC
+* Containers / mappers
+
+* TESTS
+
+* Filtering Buttons
+* DataTable

@@ -25,30 +25,49 @@
  */
 import { ReactNode } from 'react';
 
+export interface VisualState {
+  viewport: ViewportData;
+  settings: Settings;
+  measures: MeasureData[];
+  category: CategoryData;
+  entries: DataEntry[]
+}
+
 export interface Settings {
-  fontSize?: number;
-  scroll?: boolean;
-  gridColor?: string;
-  leftSetColor?: string;
-  leftSetSurplusColor?: string;
-  rightSetColor?: string;
-  rightSetSurplusColor?: string;
-}
-
-export interface ChartEntry{
-  name: string;
-  value: number;
-}
-
-export interface ChartProps{
-  width?: number;
-  height?: number;
   color?: string;
-  children?: ReactNode;
-  entries?: ChartEntry[];
-  measureTitle?: string;
-  maxValue: number;
-  minValue: number;
-  settings?: Settings;
-  categoryTitle?: string;
+  gridEnabled?: boolean;
+  tooltipEnabled?: boolean;
 }
+
+export interface ViewportData {
+  width: number;
+  height: number;
+}
+
+export interface MeasureData{
+  displayName: string;
+  index: number;
+  maxValue?: number;
+  minValue?: number;
+  color: string;
+}
+
+export interface CategoryData{
+  displayName: string;
+  maxNameLenght: number;
+  count: number;
+}
+
+export interface DataPoint {
+  measureIndex: number;
+  value: number;
+  displayValue?: string;
+}
+
+export interface DataEntry{
+  sum: number;
+  index: number;
+  name: string;
+  dataPoints: DataPoint[];
+}
+

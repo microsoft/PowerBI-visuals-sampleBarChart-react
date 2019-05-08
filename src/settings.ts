@@ -29,12 +29,13 @@ import { BAR_COLOR } from "./constants";
 
 import { dataViewObjectsParser } from "powerbi-visuals-utils-dataviewutils";
 import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
-export class CircleSettings {
+
+export class SampleBarChartSettings {
   public color: string = BAR_COLOR;
 }
 
 export class VisualSettings extends DataViewObjectsParser {
-  public barChart: CircleSettings = new CircleSettings();
+  public barChart: SampleBarChartSettings = new SampleBarChartSettings();
 }
 
 

@@ -17,7 +17,7 @@
             "max": 1
         },
         "values": {
-            "max": 1
+            "min": 1
         }
     }],
     "categorical": {
