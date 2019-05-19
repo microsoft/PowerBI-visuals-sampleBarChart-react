@@ -34,7 +34,7 @@ import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
 interface ContainerProps {
-  component: React.ComponentType<any>
+  component: React.ComponentType<any>;
 }
 
 type ContainerState = Readonly<{
@@ -45,18 +45,18 @@ const initialState: ContainerState = {
   data: {}
 };
 
-export class ReactContainer extends React.Component<ContainerProps, ContainerState>{
+export class ReactContainer extends React.Component<ContainerProps, ContainerState> {
   private static subscriptions: Array<(data: ContainerState) => void> = [];
-  
+
   private static subscribe(callback: (data: ContainerState) => void) {
     ReactContainer.subscriptions.push(callback);
     return ReactContainer.createUnsubscribeCallback(ReactContainer.subscriptions.length - 1);
   }
-  
+
   private static createUnsubscribeCallback = (i: number) => {
     return () => {
       delete ReactContainer.subscriptions[i];
-    }
+    };
   }
 
   public static update(newData: ContainerState) {
@@ -70,14 +70,14 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
 
   public state: ContainerState = initialState;
 
-  public constructor(props: ContainerProps){
+  public constructor(props: ContainerProps) {
     super(props);
     this.state = initialState;
     this.update = this.update.bind(this);
   }
 
   public update (newData: ContainerState) {
-    this.setState({ data: { ...this.state.data, ...newData }})
+    this.setState({ data: { ...this.state.data, ...newData }});
   }
 
   public componentWillMount() {
@@ -88,12 +88,12 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
     this.unsubscribe();
   }
 
-  render(){
+  render() {
     const props = this.state.data;
     const Component = this.props.component;
     return (
       <Component {...props} />
-    )
+    );
   }
 }
 
@@ -108,12 +108,12 @@ export abstract class ReactVisual {
     protected createReactContainer(component: React.ComponentType) {
         return (props: any) => React.createElement(ReactContainer, { component });
     }
-    
+
     protected reactMount(): void {
         ReactDOM.render(React.createElement(this.reactRenderer), this.reactTarget);
     }
-    
-    public renderer: () => React.ElementType; 
+
+    public renderer: () => React.ElementType;
 
     constructor(options: VisualConstructorOptions) {
         this.reactTarget = options.element;

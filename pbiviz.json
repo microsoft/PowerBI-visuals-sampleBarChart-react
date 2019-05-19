@@ -1,19 +1,19 @@
 {
   "visual":{
-    "name":"reactCircleCard",
-    "displayName":"ReactCircleCard",
-    "guid":"reactCircleCardA4D95A0D437B456695DF657A6A844A43",
+    "name":"reactSampleBarChart",
+    "displayName":"ReactSampleBarChart",
+    "guid":"reactSampleBarChartA4D95A0D437B456695DF657A6A844A43",
     "visualClassName":"Visual",
     "version":"1.0.0",
-    "description":"",
-    "supportUrl":"",
-    "gitHubUrl":""
-  },
-  "apiVersion":"2.5.0",
-  "author":{
-    "name":"Denis Lapatkin",
-    "email":"v-delapa@microsoft.com"
-  },
+    "description":"Sample Bar Chart made with React js",
+    "supportUrl": "https://community.powerbi.com",
+    "gitHubUrl": "https://github.com/Microsoft/PowerBI-visuals-sampleBarChart-react"
+},
+"apiVersion":"2.5.0",
+"author":{
+    "name":"Microsoft",
+    "email":"pbicvsupport@microsoft.com"
+},
   "assets":{
     "icon":"assets/icon.png"
   },

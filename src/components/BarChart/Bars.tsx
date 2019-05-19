@@ -26,7 +26,7 @@
  */
 import * as React from "react";
 
-import { BAR_COLOR } from "../../constants";
+import { BAR_COLOR, BAR_PADDING } from "../../constants";
 import { DataEntry, MeasureData } from "../../dataInterfaces";
 
 import { Entry } from "./types";
@@ -38,7 +38,7 @@ export interface Props {
     height: number;
     entries: Entry[];
     measures: MeasureData[];
-    showTooltip?: (tooltipEntry: DataEntry, x: number, y: number) => void;
+    showTooltip?: (tooltipEntry: DataEntry) => void;
     hideTooltip?: () => void;
 }
 
@@ -46,10 +46,9 @@ export const Bars: React.FunctionComponent<Props> = (
     props: Props
 ) => {
     const { entries, width, height, x, y, measures, showTooltip, hideTooltip } = props;
-    console.log('Bars', entries, width, height, x, y);
-    
+
     return (
-    <g 
+    <g
         className="bar-chart-bars"
         height={height}
         width={width}
@@ -57,34 +56,39 @@ export const Bars: React.FunctionComponent<Props> = (
         y={y || 0}
     >
         {entries.map(
-            (entry, index) => (<ClusteredEntry 
-                { ...entry } 
-                onMouseEnter={() => showTooltip(entry, (x || 0), (y || 0) + (height / entries.length) * index)}
+            (entry, index) => (<ClusteredEntry
+                { ...entry }
+                onMouseEnter={() => showTooltip(entry)}
                 onMouseLeave={hideTooltip}
                 x={x || 0}
                 y={(y || 0) + (height / entries.length) * index}
                 width={width}
-                height={height / entries.length}
-                measures={measures} 
+                height={height / entries.length - BAR_PADDING}
+                measures={measures}
             />)
         )}
     </g>
     );
-}
+};
 
 const ClusteredEntry: React.FunctionComponent<Entry> = (
     props: Entry
 ) => {
     const { dataPoints, sum, measures, width, height, y, x, onMouseEnter, onMouseLeave } = props;
+
+    const getEntryWidth = (dataPoint) => (
+        (dataPoint.value / measures.reduce((acc, v) => acc + v.maxValue, 0)) * width
+    );
+
     return (
         <g
-        onMouseEnter={ onMouseEnter }
-        onMouseLeave={ onMouseLeave }
-        > 
+            onMouseEnter={ onMouseEnter }
+            onMouseLeave={ onMouseLeave }
+        >
             {dataPoints.map(
-                (dataPoint, index) => 
-                <rect 
-                    width={(dataPoint.value / measures.reduce((acc, v) => acc + v.maxValue, 0)) * width }
+                (dataPoint, index) =>
+                <rect
+                    width={getEntryWidth(dataPoint)}
                     height={height / dataPoints.length }
                     y={y + (height / dataPoints.length) * index}
                     x={x || 0}
@@ -92,18 +96,18 @@ const ClusteredEntry: React.FunctionComponent<Entry> = (
                 />
             )}
         </g>
-    )
-}
+    );
+};
 
 const StackedEntry: React.FunctionComponent<Entry> = (
     props: Entry
 ) => {
     const { dataPoints, sum, measures, width, height, y, x } = props;
     return (
-        <g> 
+        <g>
             {dataPoints.map(
-                (dataPoint, index) => 
-                <rect 
+                (dataPoint, index) =>
+                <rect
                     width={(dataPoint.value / sum) * width }
                     height={height / dataPoints.length }
                     y={y + (height / dataPoints.length) * index}
@@ -112,5 +116,5 @@ const StackedEntry: React.FunctionComponent<Entry> = (
                 />
             )}
         </g>
-    )
-}
+    );
+};

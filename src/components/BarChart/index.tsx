@@ -29,9 +29,9 @@ import { Grid } from "./Grid";
 import { Ticks } from "./Ticks";
 import { Labels } from "./Labels";
 
-import { DataEntry, MeasureData } from "../../dataInterfaces";
+import { DataEntry, MeasureData, CategoryData } from "../../dataInterfaces";
 
-import { 
+import {
     TICKS_HEIGHT,
     BAR_HEIGHT,
     BAR_PADDING,
@@ -44,7 +44,7 @@ import {
 export interface Entry extends DataEntry {
     width?: number;
     height?: number;
-    y: number; 
+    y: number;
 }
 
 export interface ChartProps {
@@ -52,74 +52,121 @@ export interface ChartProps {
     height?: number;
     entries?: DataEntry[];
     measures?: MeasureData[];
-    showTooltip?: (tooltipEntry: DataEntry, x: number, y: number) => void;
+    category?: CategoryData;
+    showTooltip?: (tooltipEntry: DataEntry) => void;
     hideTooltip?: () => void;
 }
 
 export const BarChart: React.FunctionComponent<ChartProps> = (
     props: ChartProps
 ) => {
-    const { measures, height, width, showTooltip, hideTooltip } = props;
+    const {
+        measures,
+        category,
+        height,
+        width,
+        showTooltip,
+        hideTooltip
+    } = props;
 
-    if (!props.entries) return (<div>No Entries</div>);
+    if (!props.entries) return <div>No Entries</div>;
 
-    const labelsWidth = width*.2 + LABELS_PADDING;
+    console.warn("category.maxWidth", category.maxWidth);
+
+    const labelsWidth = category.maxWidth + LABELS_PADDING;
     const chartHeight = BAR_HEIGHT * props.entries.length;
-    const chartWidth = width - labelsWidth;
+    const chartWidth = width - labelsWidth - CHART_PADDING;
 
-    let entries = props.entries.sort(
-        (a: DataEntry, b: DataEntry) => (
-            a.dataPoints[0].value < b.dataPoints[0].value) 
-            ? 1 
-            : (a.dataPoints[0].value > b.dataPoints[0].value 
-                ? -1 
-                : 0
-            )
-        );
-    
+    let entries = props.entries.sort((a: DataEntry, b: DataEntry) =>
+        a.dataPoints[0].value < b.dataPoints[0].value
+        ? 1
+        : ( a.dataPoints[0].value > b.dataPoints[0].value
+            ? -1
+            : 0
+        )
+    );
+
+    const maxEntry = entries.reduce(
+        (acc, v) => (acc.sum > v.sum ? acc : v),
+        entries[0]
+    );
+    const domainMax: number = maxEntry.sum;
+
+    const calculateTicks = (entries, domainMax) => {
+        const pow = String(Math.floor(domainMax)).length - 1;
+        const ticksCount = 1 + Number(String(Math.floor(domainMax))[0]);
+        const ticks = [];
+
+        for (let i = 0; i < ticksCount; i++) {
+            ticks.push(i * Math.pow(10, pow));
+        }
+
+        return ticks;
+    };
+
+    const tickValues = calculateTicks(entries, domainMax);
+
+    const lines = tickValues.map(value => ({
+        value,
+        y: 0,
+        x: chartWidth * (value / domainMax)
+    }));
+
+    const ticks = tickValues.map(value => ({
+        value,
+        y: 0,
+        x: chartWidth * (value / domainMax)
+    }));
+
     return (
-        <div className="bar-chart"> 
+        <div className="bar-chart">
             <div
-                className="bar-chart-body" 
-                style={{ height: height  - LEGEND_HEIGHT, width }} 
+                className="bar-chart-body"
+                style={{ height: height - TICKS_HEIGHT - LEGEND_HEIGHT, width }}
             >
-                <svg
-                    height={chartHeight} 
-                    width={width}
-                >
+                <svg height={chartHeight} width={width}>
+                    <Grid
+                        x={labelsWidth}
+                        y={0}
+                        height={chartHeight}
+                        width={width}
+                        lines={lines}
+                    />
                     <Bars
-                        entries={ entries }
-                        measures={ measures } 
-                        width={ chartWidth - CHART_PADDING }
-                        height={ chartHeight }
-                        x={ labelsWidth }
-                        showTooltip={ showTooltip }
-                        hideTooltip={ hideTooltip }
+                        entries={entries}
+                        measures={measures}
+                        width={chartWidth}
+                        height={chartHeight}
+                        x={labelsWidth}
+                        showTooltip={showTooltip}
+                        hideTooltip={hideTooltip}
                     />
                     <Labels
-                        entries={ entries }
-                        width={ labelsWidth }
-                        height={ chartHeight }
-                    />
-                    <Grid
-                        height={chartHeight} 
-                        width={width} 
-                        lines={[]} 
+                        x={0}
+                        y={0}
+                        entries={entries}
+                        width={labelsWidth}
+                        height={chartHeight}
                     />
                 </svg>
             </div>
             <div
-                className="bar-chart-footer" 
+                className="bar-chart-footer"
                 style={{ height: TICKS_HEIGHT, width }}
+            >
+                <svg
+                    height={TICKS_HEIGHT}
+                    width={width}
                 >
-                <svg>
-                    <Ticks 
-                        height={TICKS_HEIGHT} 
-                        width={width} 
-                        ticks={[]} 
+                    <Ticks
+                        height={TICKS_HEIGHT}
+                        width={width}
+                        ticks={ticks}
+                        x={labelsWidth}
+                        y={0}
                     />
                 </svg>
             </div>
         </div>
     );
-}
+};

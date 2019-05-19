@@ -2,52 +2,75 @@
 @fontColor: #444;
 
 .bar-chart {
-  // outline: red solid 1px;
-  color: @fontColor;
-  .bar-chart-body{
-    overflow: hidden;
-    overflow-y: scroll;
-  }
+    color: @fontColor;
 
-  .bar-chart-labels {
-    text {
-      text-anchor: end;
-      font-size: @fontSize;
+    .bar-chart-body {
+        overflow: hidden;
+        overflow-y: scroll;
     }
-  }
+
+    .bar-chart-labels {
+        text {
+            text-anchor: end;
+            font-size: @fontSize;
+        }
+    }
+
+    .bar-chart-footer{
+        display: block;
+        text{
+            text-anchor: end;
+            font-size: @fontSize;
+        }
+    }
 }
 
 .chart-legend {
-  color: @fontColor;
-  font-size: @fontSize;
-  display: inline-block;
-
-  .chart-legend-text {
-    display: inline-block;
-    padding: 4px;
-  }
-
-  .chart-legend-color {
+    color: @fontColor;
+    font-size: @fontSize;
     display: inline-block;
 
-    width: @fontSize;
-    height:  @fontSize;
-    border-radius: 50%;
-    margin-right: @fontSize/2;
-  }
 }
 
-.tooltip{
-  position: absolute;
-  display: inline-block;
-
-  font-size: @fontSize;
-  color: white;
-  text-shadow: #333 0 0 4px;
-  background: rgba(0,0,0,0.7);
-  padding: 0 5px;
-
-  dt, dd{
+.measure-item {
     display: inline-block;
-  }
+    position: relative;
+
+    .measure-text {
+        display: inline-block;
+        padding: 0 4px 2px;
+    }
+
+    .measure-color {
+        display: inline-block;
+        position: relative;
+        top: 2px;
+
+        width: @fontSize;
+        height: @fontSize;
+        border-radius: 50%;
+    }
+}
+
+.tooltip {
+    position: absolute;
+    display: inline-table;
+
+    font-size: @fontSize;
+    color: white;
+    text-shadow: #333333 0 0 4px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+
+    dl{
+        display: table-row;
+    }
+    dt,
+    dd {
+        display: table-cell;
+        text-align: left;
+    }
+    dd {
+        font-weight: bold;
+    }
 }
