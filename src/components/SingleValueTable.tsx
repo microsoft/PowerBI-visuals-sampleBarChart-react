@@ -49,7 +49,7 @@ export const SingleValueTable: React.FunctionComponent<Props> = (
         </thead>
         <tbody>
             { props.entries &&
-            props.entries.map((entry: Entry) => 
+            props.entries.map((entry: Entry) =>
                 <tr>
                 <td>{ entry.name }</td>
                 <td>{ entry.value }</td>

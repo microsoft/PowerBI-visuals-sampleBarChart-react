@@ -32,8 +32,8 @@ export interface Tick {
 }
 
 export interface Props {
-    x?: number;
-    y?: number;
+    x: number;
+    y: number;
     width: number;
     height: number;
     ticks: Tick[];
@@ -42,21 +42,21 @@ export interface Props {
 export const Ticks: React.FunctionComponent<Props> = (
     props: Props
 ) => {
-    const { ticks, width, height } = props;
+    const { ticks, width, height, x, y } = props;
 
     return (ticks &&
-        <g 
+        <g
             className="bar-chart-ticks"
             height={height} width={width}
             >
-            { ticks.map((tick) => 
+            { ticks.map((tick) =>
                 <text
-                    x={tick.x}
-                    y={tick.y}
+                    x={tick.x + x}
+                    y={tick.y + y + (height * 2) / 3}
                     >
-                    {tick.value}
-                </text>   
+                    {String(tick.value)}
+                </text>
             )}
         </g>
     );
-}
+};

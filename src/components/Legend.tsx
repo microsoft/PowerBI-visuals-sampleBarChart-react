@@ -24,38 +24,26 @@
  *  THE SOFTWARE.
  */
 import * as React from "react";
-
-export interface Measure {
-    name?: string;
-    displayName: string;
-    color: string;
-}
+import { Measure } from "./Measure";
+import { MeasureData } from "../dataInterfaces";
 
 export interface LegendProps {
     width?: number;
     height?: number;
-    measures: Measure[]
+    measures: MeasureData[];
 }
 
 export const Legend: React.FunctionComponent<LegendProps> = (props: LegendProps) => {
     const { measures, width, height } = props;
-    
+
     return (
         measures &&
         <div className="chart-legend" style={{ width, height }}>
             { measures.map((measure) => (
-                <span className="chart-legend-item">
-                    <span 
-                        className="chart-legend-color"
-                        style={{ background: measure.color }}
-                    />
-                    <span 
-                        className="chart-legend-text"
-                    >
-                        {measure.displayName}
-                    </span>
-                </span>
+                <Measure {...measure} />
             ))}
         </div>
-    )
-}
+    );
+};
+
+export default Legend;

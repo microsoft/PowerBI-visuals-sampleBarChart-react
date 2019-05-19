@@ -34,8 +34,8 @@ export interface Line {
 }
 
 export interface Props {
-    x?: number;
-    y?: number;
+    x: number;
+    y: number;
     width: number;
     height: number;
     lines: Line[];
@@ -44,22 +44,22 @@ export interface Props {
 export const Grid: React.FunctionComponent<Props> = (
     props: Props
 ) => {
-    const { lines, width, height } = props;
+    const { lines, width, height, x, y } = props;
 
     return (lines &&
-        <g 
+        <g
             className="bar-chart-lines"
             height={height} width={width}
             >
-            { lines.map((tick) => 
+            { lines.map((line) =>
                 <line
-                    x1={0}
-                    x2={height}
-                    y1={tick.y}
-                    y2={tick.y}
+                    x1={line.x + x}
+                    x2={line.x + x}
+                    y1={y}
+                    y2={height + y}
                     stroke={LINE_COLOR}
-                />  
+                />
             )}
         </g>
     );
-}
+};

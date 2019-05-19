@@ -1,4 +1,3 @@
-
 import powerbi from "powerbi-visuals-api";
 
 import DataView = powerbi.DataView;
@@ -15,20 +14,36 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IColorPalette = powerbi.extensibility.IColorPalette;
 
-import { VisualState,
-  Settings,
-  ViewportData,
-  MeasureData,
-  CategoryData,
-  DataEntry, 
-  DataPoint 
+// powerbi-visuals-utils-formattingutils
+import {
+    valueFormatter as vf,
+    textMeasurementService as tms
+} from "powerbi-visuals-utils-formattingutils";
+import valueFormatter = vf.valueFormatter;
+import TextProperties = tms.TextProperties;
+import IValueFormatter = vf.IValueFormatter;
+import textMeasurementService = tms.textMeasurementService;
+
+// powerbi-visuals-utils-typeutils
+import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
+
+import {
+    VisualState,
+    Settings,
+    ViewportData,
+    MeasureData,
+    CategoryData,
+    DataPoint
 } from "./dataInterfaces";
 import { VisualSettings } from "./settings";
+import { FONT_SIZE, FONT_FAMILY } from "./constants";
 
+const PRECISION: number = 2;
+const DISPLAY_UNITS: number = 0;
 
 /**
  * maps Visual Update Options to Custom Visual global state
- * @param dataView 
+ * @param dataView
  */
 
 export const mapOptionsToState = (
@@ -37,102 +52,127 @@ export const mapOptionsToState = (
     colorPalette: IColorPalette
 ): VisualState => {
     const dataView: DataView = options.dataViews[0];
-    const dataViewPartial: Partial<VisualState> = mapDataView(dataView, colorPalette);
+    const dataViewPartial: Partial<VisualState> = mapDataView(
+        dataView,
+        colorPalette
+    );
 
     return {
-      measures: dataViewPartial.measures,
-      entries:  dataViewPartial.entries,
-      category: mapCategory(dataView),
-      viewport: mapViewport(options.viewport),
-      settings: settings.barChart as Settings,
+        measures: dataViewPartial.measures,
+        entries: dataViewPartial.entries,
+        category: dataViewPartial.category,
+        viewport: mapViewport(options.viewport),
+        settings: settings.barChart as Settings
     };
-}
+};
 
 export default mapOptionsToState;
 
-
 export const mapViewport = (viewport: IViewport): ViewportData => ({
     width: viewport.width,
-    height: viewport.width
+    height: viewport.height
 });
 
 
-export const mapCategory = (dataView: DataView): CategoryData => {
-  const category: DataViewCategoryColumn = dataView.categorical.categories[0];
-  const categorySource: DataViewMetadataColumn = 
-    (dataView.categorical.categories[0] as DataViewCategoricalColumn).source;
-
-  return ({
-    displayName: categorySource.displayName,
-    count: category.values.length,
-    maxNameLenght: category.values.reduce( //TODO helper
-      (acc: number, value: PrimitiveValue) => String(value).trim().length > acc 
-        ? String(value).trim().length
-        : acc,
-      0
-    )
-  }) as CategoryData;
-}
-
-
 export const mapMeasures = (
-  measures: DataViewValueColumn[],
-  colorPalette: IColorPalette
-): MeasureData[] => measures.map( 
-  (measure: DataViewValueColumn, index: number) => {
-    const measureSource: DataViewMetadataColumn = measure.source;
+    measures: DataViewValueColumn[],
+    colorPalette: IColorPalette
+): MeasureData[] =>
+    measures.map((measure: DataViewValueColumn, index: number) => {
+        const measureSource: DataViewMetadataColumn = measure.source;
 
-    return measureSource && ({
-        index,
-        color: colorPalette.getColor(measureSource.displayName+index).value,
-        displayName: measureSource.displayName,
-        maxValue: measure.maxLocal,
-        minValue: measure.minLocal,
-    }) as MeasureData;
-  }
-);
+        const formatter: IValueFormatter = valueFormatter.create({
+            format: valueFormatter.getFormatStringByColumn(measureSource),
+            precision: PRECISION, // ex settings.labels.labelPrecision,
+            value: DISPLAY_UNITS // ex settings.labels.labelDisplayUnits || maxValue
+        });
+
+        return (
+            measureSource &&
+            ({
+                index,
+                formatter,
+                color: colorPalette.getColor(measureSource.displayName + index)
+                    .value,
+                displayName: measureSource.displayName,
+                maxValue: measure.maxLocal,
+                minValue: measure.minLocal
+            } as MeasureData)
+        );
+    });
 
 export const mapDataView = (
-  dataView: DataView,
-  colorPalette: IColorPalette
+    dataView: DataView,
+    colorPalette: IColorPalette
 ): Partial<VisualState> => {
     const groups: DataViewValueColumnGroup[] = dataView.categorical.values.grouped();
-    
-    const category = dataView.categorical.categories[0];
-    
+
+    const category: DataViewCategoryColumn = dataView.categorical.categories[0];
+    const categorySource: DataViewMetadataColumn = (dataView.categorical
+        .categories[0] as DataViewCategoricalColumn).source;
+
+    const categoriesFormatter: IValueFormatter = valueFormatter.create({
+        format: valueFormatter.getFormatStringByColumn(category.source)
+    });
+
+    const categoryDisplayValues: string[] = category.values.map(
+        (value: PrimitiveValue) => categoriesFormatter.format(value)
+    );
+
+    const maxCategoryNameLength: number = categoryDisplayValues.reduce(
+        (acc: number, value: string) =>
+            value.length > acc ? value.length : acc,
+        0
+    );
+    const charWidth = textMeasurementService.measureSvgTextWidth({
+        text: "M",
+        fontFamily: FONT_FAMILY,
+        fontSize: PixelConverter.toString(FONT_SIZE),
+    });
+
+    const maxCategoryNameWidth: number = maxCategoryNameLength * charWidth;
+
+    const categoryData = {
+        displayName: categorySource.displayName,
+        count: category.values.length,
+        displayValues: categoryDisplayValues,
+        formatter: categoriesFormatter,
+        maxLength: maxCategoryNameLength,
+        maxWidth: maxCategoryNameWidth
+    } as CategoryData;
+
     const groupMeasures = groups[0].values;
-    console.warn('DBG groups', groups, 'groupMeasures', groupMeasures, 'category', category,  'dataView', dataView);
+    const measures = mapMeasures(groupMeasures, colorPalette);
 
-    const names = dataView.categorical.categories[0].values as string[];
+    const getEntryDataPoints = (entryIndex: number): DataPoint[] =>
+        groupMeasures.map(
+            (column: DataViewValueColumn, measureIndex: number): DataPoint => ({
+                measureIndex,
+                value: Number(column.values[entryIndex]),
+                displayValue: measures[measureIndex].formatter.format(
+                    column.values[entryIndex]
+                )
+            })
+        );
 
-    const getEntryDataPoints = (
-      entryIndex: number
-      ): DataPoint[] => 
-      groupMeasures.map(
-        (column: DataViewValueColumn, measureIndex: number): DataPoint => ({
-            measureIndex,
-            value: Number(column.values[entryIndex]),
-            displayValue: String(column.values[entryIndex]),//TODO Formatter
-          })
-      );
-  
-    const mapDataViewGroupsToEntries = (caterogyValues: PrimitiveValue[]) => caterogyValues.map(
-      (value: PrimitiveValue, i: number) => {
-        const dataPoints: DataPoint[] = getEntryDataPoints(i);
-        
-        return ({ 
-          dataPoints,
-          index: i,
-          sum: dataPoints.reduce( 
-            (acc: number, value: DataPoint) => acc + value.value, 
-            0),
-          name: String(value), // TODO formatter
-      })
-    }
-    )
-  
+    const mapDataViewGroupsToEntries = (categoryValues: PrimitiveValue[]) =>
+        categoryValues.map((value: PrimitiveValue, i: number) => {
+            const dataPoints: DataPoint[] = getEntryDataPoints(i);
+
+            return {
+                dataPoints,
+                index: i,
+                sum: dataPoints.reduce(
+                    (acc: number, value: DataPoint) => acc + value.value,
+                    0
+                ),
+                name: categoriesFormatter.format(value)
+            };
+        });
+
     return {
-      measures: mapMeasures(groupMeasures, colorPalette),
-      entries: mapDataViewGroupsToEntries(category.values),
+        measures,
+        category: categoryData,
+        entries: mapDataViewGroupsToEntries(category.values)
     };
-  };
+};

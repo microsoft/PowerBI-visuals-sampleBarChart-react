@@ -26,6 +26,15 @@
 import * as React from "react";
 import { DataEntry, MeasureData, DataPoint } from "../dataInterfaces";
 
+import { TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y } from "../constants";
+
+import { Measure, MeasureProps } from "./Measure";
+
+export interface State {
+    x: number;
+    y: number;
+}
+
 export interface Entry {
     name: string | number;
     value: string | number;
@@ -36,25 +45,65 @@ export interface Props extends DataEntry {
     categoryTitle: string;
     categoryValue: string;
     measures: MeasureData[];
-    x: number; 
-    y: number
 }
 
-export const Tooltip: React.FunctionComponent<Props> = (
-    props: Props
-) => (
-    props.measures &&
-    <div className="tooltip" style={{ top: props.y + 60, left: props.x }}>
-        <dl>
-            <dt>{ props.categoryTitle }</dt>
-            <dd>{ props.categoryValue }</dd>
-        </dl>
-        { props.dataPoints.map((dataPoint: DataPoint) => 
-            <dl>
-                <dt>{ props.measures[dataPoint.measureIndex].displayName }</dt>
-                <dd>{ dataPoint.value }</dd>
-            </dl>
-        )}
-    </div>
-);
+export class Tooltip extends React.Component<Props, State> {
+    public static initialState: State = { x: 0, y: 0 };
 
+    constructor(props: Props) {
+        super(props);
+        this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
+    }
+
+    public state: State = Tooltip.initialState;
+
+    componentWillMount() {
+        document.addEventListener("mousemove", this.mouseMoveHandler);
+    }
+
+    mouseMoveHandler(e: any) {
+        this.setState({ x: e.pageX, y: e.pageY });
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("mousemove", this.mouseMoveHandler);
+    }
+
+    render() {
+        const {
+            categoryTitle,
+            categoryValue,
+            measures,
+            dataPoints
+        } = this.props;
+
+        const { x, y } = this.state;
+
+        return (
+            measures && (
+                <div
+                    className="tooltip"
+                    style={{
+                        top: y + TOOLTIP_OFFSET_Y,
+                        left: x + TOOLTIP_OFFSET_X
+                    }}
+                >
+                    <dl>
+                        <dt>{categoryTitle}:</dt>
+                        <dd>{categoryValue}</dd>
+                    </dl>
+                    {dataPoints.map((dataPoint: DataPoint) => (
+                        <dl>
+                            <dt>
+                                <Measure
+                                    {...measures[dataPoint.measureIndex]}
+                                />
+                            </dt>
+                            <dd>{dataPoint.displayValue}</dd>
+                        </dl>
+                    ))}
+                </div>
+            )
+        );
+    }
+}

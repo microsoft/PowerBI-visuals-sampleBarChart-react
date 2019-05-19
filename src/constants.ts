@@ -23,15 +23,19 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-export const LINE_COLOR = "#777777";
-export const BAR_COLOR = '#5555FF';
- 
-export const LEGEND_HEIGHT = 25;
-export const TICKS_HEIGHT = 20;
-export const BAR_HEIGHT = 20;
-export const BAR_PADDING = 4;
+export const LINE_COLOR: string = "#AAAAAA";
+export const BAR_COLOR: string = "#5555FF";
 
-export const LABELS_PADDING = 10;
-export const CHART_PADDING = 30;
+export const LEGEND_HEIGHT: number = 25;
+export const TICKS_HEIGHT: number = 20;
+export const BAR_HEIGHT: number = 20;
+export const BAR_PADDING: number = 4;
 
-export const FONT_SIZE = 10;
+export const LABELS_PADDING: number = 10;
+export const CHART_PADDING: number = 30;
+
+export const FONT_SIZE: number = 10;
+export const FONT_FAMILY: string = "helvetica,arial,sans-serif";
+
+export const TOOLTIP_OFFSET_X: number = 10;
+export const TOOLTIP_OFFSET_Y: number = 10;
