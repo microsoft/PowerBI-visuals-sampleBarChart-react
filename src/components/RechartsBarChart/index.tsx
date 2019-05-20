@@ -53,8 +53,9 @@ export interface ChartProps {
     entries?: DataEntry[];
     measures?: MeasureData[];
     category?: CategoryData;
-    showTooltip?: (tooltipEntry: DataEntry) => void;
-    hideTooltip?: () => void;
+    isClustered?: boolean;
+    tooltipEnabled?: boolean;
+    gridEnabled?: boolean;
 }
 
 export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
@@ -65,8 +66,9 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
         category,
         height,
         width,
-        showTooltip,
-        hideTooltip
+        isClustered,
+        tooltipEnabled,
+        gridEnabled,
     } = props;
 
     if (!props.entries) return <div>No Entries</div>;
@@ -130,10 +132,10 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
                 data={entries}
                 margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
             >
-                <CartesianGrid
+                {gridEnabled && <CartesianGrid
                     horizontal={false}
                     stroke={LINE_COLOR}
-                />
+                />}
                 <XAxis
                     dataKey="sum"
                     type="number"
@@ -154,21 +156,25 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
                     tickMargin={0}
                     ticks={entries.map(entry => entry.name)}
                 />
-                <Tooltip content={(props) => {
-                    if (props.payload && props.payload[0] && props.payload[0].payload) {
-                        const dataEntry = props.payload[0].payload;
-                        console.log('tooltip', dataEntry);
+                { tooltipEnabled &&
+                    <Tooltip
+                        animationDuration={300}
+                        content={(props) => {
+                        if (props.payload && props.payload[0] && props.payload[0].payload) {
+                            const dataEntry = props.payload[0].payload;
+                            console.log('tooltip', dataEntry);
 
-                        return dataEntry && (<TooltipContent
-                            measures={measures}
-                            categoryTitle={category.displayName}
-                            categoryValue={dataEntry.name}
-                            { ...dataEntry }
-                        />)
-                    }
-                }}/>
+                            return dataEntry && (<TooltipContent
+                                measures={measures}
+                                categoryTitle={category.displayName}
+                                categoryValue={dataEntry.name}
+                                { ...dataEntry }
+                            />)
+                        }
+                    }}/>
+                }
                 {measures.map((measure, index) =>
-                    <Bar dataKey={`value${index}`} fill={measure.color} stackId="a" />
+                    <Bar dataKey={`value${index}`} fill={measure.color} stackId={ isClustered ? `value${index}` : "stacked" } />
                 )}
             </BarChart>
             </div>

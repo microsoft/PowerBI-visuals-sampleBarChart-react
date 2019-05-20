@@ -32,6 +32,9 @@ import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
 
 export class SampleBarChartSettings {
   public color: string = BAR_COLOR;
+  public isClustered: boolean = false;
+  public gridEnabled: boolean = true;
+  public tooltipEnabled: boolean = true;
 }
 
 export class VisualSettings extends DataViewObjectsParser {

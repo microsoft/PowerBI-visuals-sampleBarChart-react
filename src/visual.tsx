@@ -108,8 +108,9 @@ export class SampleBarChartReact extends React.Component<
                         measures,
                         entries,
                         category,
-                        showTooltip: this.showTooltipAction,
-                        hideTooltip: this.hideTooltipAction
+                        isClustered: settings.isClustered,
+                        gridEnabled: settings.gridEnabled,
+                        tooltipEnabled: settings.tooltipEnabled
                     }}
                 />
             </div>

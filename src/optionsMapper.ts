@@ -73,18 +73,18 @@ export const mapViewport = (viewport: IViewport): ViewportData => ({
     height: viewport.height
 });
 
-
 export const mapMeasures = (
     measures: DataViewValueColumn[],
-    colorPalette: IColorPalette
+    colorPalette: IColorPalette,
+    settings
 ): MeasureData[] =>
     measures.map((measure: DataViewValueColumn, index: number) => {
         const measureSource: DataViewMetadataColumn = measure.source;
 
         const formatter: IValueFormatter = valueFormatter.create({
             format: valueFormatter.getFormatStringByColumn(measureSource),
-            precision: PRECISION, // ex settings.labels.labelPrecision,
-            value: DISPLAY_UNITS // ex settings.labels.labelDisplayUnits || maxValue
+            precision: PRECISION,
+            value: DISPLAY_UNITS
         });
 
         return (
@@ -92,8 +92,9 @@ export const mapMeasures = (
             ({
                 index,
                 formatter,
-                color: colorPalette.getColor(measureSource.displayName + index)
-                    .value,
+                color: index
+                    ? settings.color
+                    : colorPalette.getColor(measureSource.displayName).value,
                 displayName: measureSource.displayName,
                 maxValue: measure.maxLocal,
                 minValue: measure.minLocal
@@ -119,17 +120,16 @@ export const mapDataView = (
         (value: PrimitiveValue) => categoriesFormatter.format(value)
     );
 
-    const getStringLength = (text: string) => textMeasurementService.measureSvgTextWidth({
-        text,
-        fontFamily: FONT_FAMILY,
-        fontSize: PixelConverter.toString(FONT_SIZE),
-    })
+    const getStringLength = (text: string) =>
+        textMeasurementService.measureSvgTextWidth({
+            text,
+            fontFamily: FONT_FAMILY,
+            fontSize: PixelConverter.toString(FONT_SIZE)
+        });
 
     const maxCategoryNameWidth: number = categoryDisplayValues.reduce(
         (acc: number, value: string) =>
-            getStringLength(value) > acc
-            ? getStringLength(value)
-            : acc,
+            getStringLength(value) > acc ? getStringLength(value) : acc,
         0
     );
 

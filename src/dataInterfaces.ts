@@ -38,6 +38,7 @@ export interface Settings {
     color?: string;
     gridEnabled?: boolean;
     tooltipEnabled?: boolean;
+    isClustered?: boolean;
 }
 
 export interface ViewportData {
