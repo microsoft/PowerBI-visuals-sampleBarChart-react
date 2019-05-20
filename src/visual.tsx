@@ -53,7 +53,8 @@ import { VisualSettings } from "./settings";
 import { ReactVisual } from "./reactUtils";
 import optionsMapper from "./optionsMapper";
 
-import { BarChart } from "./components/BarChart";
+// import { BarChart } from "./components/BarChart";
+import { RechartsBarChart } from "./components/RechartsBarChart";
 import { Legend } from "./components/Legend";
 import { Tooltip } from "./components/Tooltip";
 import "./../style/visual.less";
@@ -101,7 +102,7 @@ export class SampleBarChartReact extends React.Component<
                     />
                 )}
                 <Legend {...{ ...viewport, height: LEGEND_HEIGHT, measures }} />
-                <BarChart
+                <RechartsBarChart
                     {...{
                         ...viewport,
                         measures,

@@ -16,9 +16,10 @@
         }
     }
 
-    .bar-chart-footer{
+    .bar-chart-footer {
         display: block;
-        text{
+
+        text {
             text-anchor: end;
             font-size: @fontSize;
         }
@@ -54,22 +55,27 @@
 
 .tooltip {
     position: absolute;
-    display: inline-table;
+    display: inline-block;
+}
 
+.tooltip-content {
+    display: inline-table;
     font-size: @fontSize;
     color: white;
     text-shadow: #333333 0 0 4px;
     background: rgba(0, 0, 0, 0.7);
     padding: 10px;
 
-    dl{
+    dl {
         display: table-row;
     }
+
     dt,
     dd {
         display: table-cell;
         text-align: left;
     }
+
     dd {
         font-weight: bold;
     }

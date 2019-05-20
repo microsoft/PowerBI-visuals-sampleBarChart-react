@@ -71,10 +71,7 @@ export class Tooltip extends React.Component<Props, State> {
 
     render() {
         const {
-            categoryTitle,
-            categoryValue,
-            measures,
-            dataPoints
+            measures
         } = this.props;
 
         const { x, y } = this.state;
@@ -88,22 +85,33 @@ export class Tooltip extends React.Component<Props, State> {
                         left: x + TOOLTIP_OFFSET_X
                     }}
                 >
-                    <dl>
-                        <dt>{categoryTitle}:</dt>
-                        <dd>{categoryValue}</dd>
-                    </dl>
-                    {dataPoints.map((dataPoint: DataPoint) => (
-                        <dl>
-                            <dt>
-                                <Measure
-                                    {...measures[dataPoint.measureIndex]}
-                                />
-                            </dt>
-                            <dd>{dataPoint.displayValue}</dd>
-                        </dl>
-                    ))}
-                </div>
+                <TooltipContent
+                    {...this.props}
+                />
+            </div>
             )
         );
     }
+}
+
+export const TooltipContent: React.FunctionComponent<Props> = (props: Props) => {
+    const {categoryTitle, categoryValue, measures, dataPoints } = props;
+    return (
+        <div className="tooltip-content">
+            <dl>
+                <dt>{categoryTitle}:</dt>
+                <dd>{categoryValue}</dd>
+            </dl>
+            {dataPoints.map((dataPoint: DataPoint) => (
+                <dl>
+                    <dt>
+                        <Measure
+                            {...measures[dataPoint.measureIndex]}
+                        />
+                    </dt>
+                    <dd>{dataPoint.displayValue}</dd>
+                </dl>
+            ))}
+        </div>
+    );
 }

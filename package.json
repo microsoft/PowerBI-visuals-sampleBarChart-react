@@ -20,7 +20,8 @@
     "powerbi-visuals-utils-formattingutils": "^4.2.0",
     "powerbi-visuals-utils-typeutils": "^2.1.0",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "recharts": "^1.6.0"
   },
   "devDependencies": {
     "@types/d3": "^5.7.2",
