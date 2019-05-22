@@ -38,7 +38,7 @@
         "barChart": {
             "displayName": "Bar Chart",
             "properties": {
-                "color": {
+                "fill": {
                     "displayName": "Color",
                     "description": "The fill color of bars.",
                     "type": {

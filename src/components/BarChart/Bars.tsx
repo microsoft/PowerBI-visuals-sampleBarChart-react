@@ -47,7 +47,7 @@ export const Bars: React.FunctionComponent<Props> = (
 ) => {
     const { entries, width, height, x, y, measures, showTooltip, hideTooltip } = props;
 
-    return (
+    return entries && (
     <g
         className="bar-chart-bars"
         height={height}

@@ -71,8 +71,6 @@ export const BarChart: React.FunctionComponent<ChartProps> = (
 
     if (!props.entries) return <div>No Entries</div>;
 
-    console.warn("category.maxWidth", category.maxWidth);
-
     const labelsWidth = category.maxWidth + LABELS_PADDING;
     const chartHeight = BAR_HEIGHT * props.entries.length;
     const chartWidth = width - labelsWidth - CHART_PADDING;

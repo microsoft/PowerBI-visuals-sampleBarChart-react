@@ -51,6 +51,7 @@ export interface MeasureData {
     index: number;
     maxValue?: number;
     minValue?: number;
+    queryName?: string;
     color: string;
     formatter: IValueFormatter;
 }

@@ -152,7 +152,7 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
                     width={labelsWidth}
                     minTickGap={0}
                     interval={0}
-                    tick={{ fontSize: FONT_SIZE }}
+                    tick={{ fontSize: FONT_SIZE, width: labelsWidth + LABELS_PADDING * 2 }}
                     tickMargin={0}
                     ticks={entries.map(entry => entry.name)}
                 />
@@ -162,7 +162,6 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
                         content={(props) => {
                         if (props.payload && props.payload[0] && props.payload[0].payload) {
                             const dataEntry = props.payload[0].payload;
-                            console.log('tooltip', dataEntry);
 
                             return dataEntry && (<TooltipContent
                                 measures={measures}
