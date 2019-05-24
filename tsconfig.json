@@ -9,7 +9,7 @@
     "outDir": "./.tmp/build/",
     "moduleResolution": "node",
     "declaration": true,
-    "types": ["react"],
+    "types": ["react", "jest"],
     "lib": [
       "es2015",
       "dom"
@@ -17,5 +17,8 @@
   },
   "files": [
     "src/visual.tsx"
-  ]
+  ],
+  "env": {
+    "jest": true
+  }
 }

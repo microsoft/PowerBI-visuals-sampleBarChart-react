@@ -89,7 +89,9 @@ export class SampleBarChartReact extends React.Component<
         const { isTooltipShown, tooltipEntry } = this.state;
 
         return viewport && category && settings && entries && measures ? (
-            <div style={{ position: "relative" }}>
+            <div
+                className={"bar-chart-wrapper"}
+                style={{ position: "relative" }}>
                 {isTooltipShown && (
                     <Tooltip
                         index={tooltipEntry.index}
@@ -153,7 +155,7 @@ export class Visual extends ReactVisual implements IVisual {
     }
 
     public update(options: VisualUpdateOptions) {
-        if(Visual.shouldVisualUpdate(options)) {
+        if (Visual.shouldVisualUpdate(options)) {
             try {
                 this.events.renderingStarted(options);
 
@@ -184,28 +186,40 @@ export class Visual extends ReactVisual implements IVisual {
             options
         );
 
+        // console.warn('this.state', this.state);
+
         if (true || objectName === "barChart") {
             this.state.measures.forEach(measure => {
+
                 const instance: VisualObjectInstance = {
                     displayName: measure.displayName,
                     objectName: "barChart",
-                    selector: null,
+                    selector: measure.queryName,
                     properties: {
                         fill: { solid: { color: measure.color } }
                     }
                 };
 
-                if ((instanceEnumeration as VisualObjectInstanceEnumerationObject).instances) {
+                // console.log('measure', measure, instance);
+                if (
                     (instanceEnumeration as VisualObjectInstanceEnumerationObject)
                         .instances
-                        .push(instance);
+                ) {
+                    (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances.push(
+                        instance
+                    );
                 } else {
-                    (instanceEnumeration as VisualObjectInstance[]).push(instance);
+                    (instanceEnumeration as VisualObjectInstance[]).push(
+                        instance
+                    );
                 }
             });
         }
 
-        return  (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances || [];
+        return (
+            (instanceEnumeration as VisualObjectInstanceEnumerationObject)
+                .instances || []
+        );
     }
 
     protected updateVisualProperties(options: VisualUpdateOptions) {

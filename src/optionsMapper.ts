@@ -45,7 +45,6 @@ import {
     textMeasurementService as tms
 } from "powerbi-visuals-utils-formattingutils";
 import valueFormatter = vf.valueFormatter;
-import TextProperties = tms.TextProperties;
 import IValueFormatter = vf.IValueFormatter;
 import textMeasurementService = tms.textMeasurementService;
 
@@ -100,6 +99,8 @@ export const mapOptionsToState = (
         settings,
         colorPalette
     );
+
+    // console.warn('mapOptions', dataView, settings);
 
     return {
         measures: dataViewPartial.measures,
