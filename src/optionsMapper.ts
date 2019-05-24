@@ -45,7 +45,6 @@ import {
     textMeasurementService as tms
 } from "powerbi-visuals-utils-formattingutils";
 import valueFormatter = vf.valueFormatter;
-import TextProperties = tms.TextProperties;
 import IValueFormatter = vf.IValueFormatter;
 import textMeasurementService = tms.textMeasurementService;
 
