@@ -1,3 +1,28 @@
+/*
+ *  Power BI Visualizations
+ *
+ *  Copyright (c) Microsoft Corporation
+ *  All rights reserved.
+ *  MIT License
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the ""Software""), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
 import powerbi from "powerbi-visuals-api";
 
 import DataView = powerbi.DataView;
@@ -41,6 +66,24 @@ import { FONT_SIZE, FONT_FAMILY } from "./constants";
 const PRECISION: number = 2;
 const DISPLAY_UNITS: number = 0;
 
+export const optionsAreValid = (
+    options: VisualUpdateOptions
+): boolean => {
+    try{
+        return !!(
+            options &&
+            options.dataViews &&
+            options.dataViews[0] &&
+            options.dataViews[0].categorical &&
+            options.dataViews[0].categorical.values &&
+            options.dataViews[0].categorical.categories &&
+            options.dataViews[0].categorical.categories[0]
+        );
+    } catch (e) {
+        return false;
+    }
+}
+
 /**
  * maps Visual Update Options to Custom Visual global state
  * @param dataView
@@ -54,6 +97,7 @@ export const mapOptionsToState = (
     const dataView: DataView = options.dataViews[0];
     const dataViewPartial: Partial<VisualState> = mapDataView(
         dataView,
+        settings,
         colorPalette
     );
 
@@ -73,36 +117,9 @@ export const mapViewport = (viewport: IViewport): ViewportData => ({
     height: viewport.height
 });
 
-
-export const mapMeasures = (
-    measures: DataViewValueColumn[],
-    colorPalette: IColorPalette
-): MeasureData[] =>
-    measures.map((measure: DataViewValueColumn, index: number) => {
-        const measureSource: DataViewMetadataColumn = measure.source;
-
-        const formatter: IValueFormatter = valueFormatter.create({
-            format: valueFormatter.getFormatStringByColumn(measureSource),
-            precision: PRECISION, // ex settings.labels.labelPrecision,
-            value: DISPLAY_UNITS // ex settings.labels.labelDisplayUnits || maxValue
-        });
-
-        return (
-            measureSource &&
-            ({
-                index,
-                formatter,
-                color: colorPalette.getColor(measureSource.displayName + index)
-                    .value,
-                displayName: measureSource.displayName,
-                maxValue: measure.maxLocal,
-                minValue: measure.minLocal
-            } as MeasureData)
-        );
-    });
-
 export const mapDataView = (
     dataView: DataView,
+    settings: VisualSettings,
     colorPalette: IColorPalette
 ): Partial<VisualState> => {
     const groups: DataViewValueColumnGroup[] = dataView.categorical.values.grouped();
@@ -119,30 +136,29 @@ export const mapDataView = (
         (value: PrimitiveValue) => categoriesFormatter.format(value)
     );
 
-    const maxCategoryNameLength: number = categoryDisplayValues.reduce(
+    const getStringLength = (text: string) =>
+        textMeasurementService.measureSvgTextWidth({
+            text,
+            fontFamily: FONT_FAMILY,
+            fontSize: PixelConverter.toString(FONT_SIZE)
+        });
+
+    const maxCategoryNameWidth: number = categoryDisplayValues.reduce(
         (acc: number, value: string) =>
-            value.length > acc ? value.length : acc,
+            getStringLength(value) > acc ? getStringLength(value) : acc,
         0
     );
-    const charWidth = textMeasurementService.measureSvgTextWidth({
-        text: "M",
-        fontFamily: FONT_FAMILY,
-        fontSize: PixelConverter.toString(FONT_SIZE),
-    });
-
-    const maxCategoryNameWidth: number = maxCategoryNameLength * charWidth;
 
     const categoryData = {
         displayName: categorySource.displayName,
         count: category.values.length,
         displayValues: categoryDisplayValues,
         formatter: categoriesFormatter,
-        maxLength: maxCategoryNameLength,
         maxWidth: maxCategoryNameWidth
     } as CategoryData;
 
     const groupMeasures = groups[0].values;
-    const measures = mapMeasures(groupMeasures, colorPalette);
+    const measures = mapMeasures(groupMeasures, settings, colorPalette);
 
     const getEntryDataPoints = (entryIndex: number): DataPoint[] =>
         groupMeasures.map(
@@ -176,3 +192,33 @@ export const mapDataView = (
         entries: mapDataViewGroupsToEntries(category.values)
     };
 };
+
+export const mapMeasures = (
+    measures: DataViewValueColumn[],
+    settings: VisualSettings,
+    colorPalette: IColorPalette,
+): MeasureData[] =>
+    measures.map((measure: DataViewValueColumn, index: number) => {
+        const measureSource: DataViewMetadataColumn = measure.source;
+
+        const formatter: IValueFormatter = valueFormatter.create({
+            format: valueFormatter.getFormatStringByColumn(measureSource),
+            precision: PRECISION,
+            value: DISPLAY_UNITS
+        });
+
+        return (
+            measureSource &&
+            ({
+                index,
+                formatter,
+                queryName: measureSource.queryName,
+                color: index
+                    ? settings.barChart.color
+                    : colorPalette.getColor(measureSource.displayName).value,
+                displayName: measureSource.displayName,
+                maxValue: measure.maxLocal,
+                minValue: measure.minLocal
+            } as MeasureData)
+        );
+    });

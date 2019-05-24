@@ -38,7 +38,8 @@ import {
     BAR_COLOR,
     LEGEND_HEIGHT,
     LABELS_PADDING,
-    CHART_PADDING
+    CHART_PADDING,
+    LINE_COLOR
 } from "../../constants";
 
 export interface Entry extends DataEntry {
@@ -70,8 +71,6 @@ export const BarChart: React.FunctionComponent<ChartProps> = (
     } = props;
 
     if (!props.entries) return <div>No Entries</div>;
-
-    console.warn("category.maxWidth", category.maxWidth);
 
     const labelsWidth = category.maxWidth + LABELS_PADDING;
     const chartHeight = BAR_HEIGHT * props.entries.length;
@@ -122,7 +121,7 @@ export const BarChart: React.FunctionComponent<ChartProps> = (
         <div className="bar-chart">
             <div
                 className="bar-chart-body"
-                style={{ height: height - TICKS_HEIGHT - LEGEND_HEIGHT, width }}
+                style={{ height: height - TICKS_HEIGHT - LEGEND_HEIGHT, width, borderBottom: `1px solid ${LINE_COLOR}` }}
             >
                 <svg height={chartHeight} width={width}>
                     <Grid

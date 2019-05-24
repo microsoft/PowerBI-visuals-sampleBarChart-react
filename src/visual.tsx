@@ -42,16 +42,17 @@ import IColorPalette = powerbi.extensibility.IColorPalette;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 
 import VisualObjectInstance = powerbi.VisualObjectInstance;
+import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 import { VisualState, DataEntry } from "./dataInterfaces";
-import { BAR_COLOR, LEGEND_HEIGHT } from "./constants";
+import { LEGEND_HEIGHT } from "./constants";
 import { VisualSettings } from "./settings";
 import { ReactVisual } from "./reactUtils";
-import optionsMapper from "./optionsMapper";
+import { mapOptionsToState, optionsAreValid } from "./optionsMapper";
 
 import { BarChart } from "./components/BarChart";
 import { Legend } from "./components/Legend";
@@ -126,8 +127,10 @@ export class Visual extends ReactVisual implements IVisual {
     private colorPalette: IColorPalette;
     private colorHelper: ColorHelper;
 
+    private state: VisualState;
+
     protected static shouldVisualUpdate(options: VisualUpdateOptions): boolean {
-        return true; // !!(options && options.dataViews && options.dataViews[0])
+        return optionsAreValid(options);
     }
 
     constructor(options: VisualConstructorOptions) {
@@ -136,10 +139,6 @@ export class Visual extends ReactVisual implements IVisual {
         this.initializeReact(options);
     }
 
-    /**
-     * TODO docs initializeVisualProperties
-     * @param options VisualConstructorOptions
-     */
     protected initializeVisualProperties(options: VisualConstructorOptions) {
         this.visualHost = options.host;
 
@@ -153,57 +152,67 @@ export class Visual extends ReactVisual implements IVisual {
         this.reactMount();
     }
 
-    /**
-     * TODO docs
-     * @param options
-     */
     public update(options: VisualUpdateOptions) {
-        // if(Visual.shouldVisualUpdate(options)) {
-        try {
-            this.events.renderingStarted(options);
+        if(Visual.shouldVisualUpdate(options)) {
+            try {
+                this.events.renderingStarted(options);
 
-            this.updateVisualProperties(options);
+                this.updateVisualProperties(options);
 
-            const newState: VisualState = optionsMapper(
-                options,
-                this.settings,
-                this.colorPalette
-            );
+                this.state = mapOptionsToState(
+                    options,
+                    this.settings,
+                    this.colorPalette
+                );
 
-            console.warn("UPDATED DATA", newState);
+                this.updateReactContainers(this.state);
 
-            this.updateReactContainers(newState);
-
-            this.events.renderingFinished(options);
-        } catch (e) {
-            console.error(e);
-            this.events.renderingFailed(options);
+                this.events.renderingFinished(options);
+            } catch (e) {
+                console.error(e);
+                this.events.renderingFailed(options);
+            }
         }
     }
 
     public enumerateObjectInstances(
         options: EnumerateVisualObjectInstancesOptions
     ): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
-        return VisualSettings.enumerateObjectInstances(
+        const objectName: string = options.objectName;
+        const instanceEnumeration: VisualObjectInstanceEnumeration = VisualSettings.enumerateObjectInstances(
             this.settings || VisualSettings.getDefault(),
             options
         );
+
+        if (true || objectName === "barChart") {
+            this.state.measures.forEach(measure => {
+                const instance: VisualObjectInstance = {
+                    displayName: measure.displayName,
+                    objectName: "barChart",
+                    selector: null,
+                    properties: {
+                        fill: { solid: { color: measure.color } }
+                    }
+                };
+
+                if ((instanceEnumeration as VisualObjectInstanceEnumerationObject).instances) {
+                    (instanceEnumeration as VisualObjectInstanceEnumerationObject)
+                        .instances
+                        .push(instance);
+                } else {
+                    (instanceEnumeration as VisualObjectInstance[]).push(instance);
+                }
+            });
+        }
+
+        return  (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances || [];
     }
 
-    /**
-     * TODO docs
-     * @param options VisualUpdateOptions
-     */
     protected updateVisualProperties(options: VisualUpdateOptions) {
         this.settings = Visual.parseSettings(options.dataViews[0]);
     }
 
-    // TODO mapper
     protected static parseSettings(dataView: DataView): VisualSettings {
         return VisualSettings.parse(dataView) as VisualSettings;
-    }
-
-    private clear() {
-        // TODO
     }
 }

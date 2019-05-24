@@ -27,7 +27,7 @@ export const LINE_COLOR: string = "#AAAAAA";
 export const BAR_COLOR: string = "#5555FF";
 
 export const LEGEND_HEIGHT: number = 25;
-export const TICKS_HEIGHT: number = 20;
+export const TICKS_HEIGHT: number = 30;
 export const BAR_HEIGHT: number = 20;
 export const BAR_PADDING: number = 4;
 

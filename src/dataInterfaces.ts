@@ -38,6 +38,7 @@ export interface Settings {
     color?: string;
     gridEnabled?: boolean;
     tooltipEnabled?: boolean;
+    isClustered?: boolean;
 }
 
 export interface ViewportData {
@@ -50,6 +51,7 @@ export interface MeasureData {
     index: number;
     maxValue?: number;
     minValue?: number;
+    queryName?: string;
     color: string;
     formatter: IValueFormatter;
 }
@@ -58,7 +60,6 @@ export interface CategoryData {
     displayName: string;
     count: number;
     displayValues: string[];
-    maxLength: number;
     maxWidth: number;
     formatter: IValueFormatter;
 }
