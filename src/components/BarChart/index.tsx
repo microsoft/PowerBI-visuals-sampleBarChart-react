@@ -34,8 +34,6 @@ import { DataEntry, MeasureData, CategoryData } from "../../dataInterfaces";
 import {
     TICKS_HEIGHT,
     BAR_HEIGHT,
-    BAR_PADDING,
-    BAR_COLOR,
     LEGEND_HEIGHT,
     LABELS_PADDING,
     CHART_PADDING,

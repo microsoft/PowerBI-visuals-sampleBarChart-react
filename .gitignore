@@ -345,3 +345,4 @@ webpack\.statistics\.*html
 webpack.statistics.*.html
 
 .editorconfig
+.stylelintrc
