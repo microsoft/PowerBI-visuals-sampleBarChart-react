@@ -1,0 +1,25 @@
+{
+  "visual":{
+    "name":"reactSampleBarChart",
+    "displayName":"ReactSampleBarChart",
+    "guid":"reactSampleBarChartA4D95A0D437B456695DF657A6A844A43",
+    "visualClassName":"Visual",
+    "version":"1.0.0",
+    "description":"Sample Bar Chart made with React js",
+    "supportUrl": "https://community.powerbi.com",
+    "gitHubUrl": "https://github.com/Microsoft/PowerBI-visuals-sampleBarChart-react"
+},
+"apiVersion":"2.6.0",
+"author":{
+    "name":"Microsoft",
+    "email":"pbicvsupport@microsoft.com"
+},
+  "assets":{
+    "icon":"assets/icon.png"
+  },
+  "externalJS":null,
+  "style": "style/visual.less",
+  "capabilities": "capabilities.json",
+  "dependencies": null,
+  "stringResources": []
+}

@@ -1,0 +1,76 @@
+{
+    "dataRoles": [{
+            "name": "category",
+            "displayName": "Category Data",
+            "kind": "Grouping"
+        },
+        {
+            "name": "values",
+            "displayName": "Values",
+            "kind": "Measure"
+        }
+    ],
+    "dataViewMappings": [{
+        "conditions": [{
+            "category": {
+                "max": 1
+            },
+            "values": {
+                "min": 1
+            }
+        }],
+        "categorical": {
+            "categories": {
+                "for": {
+                    "in": "category"
+                }
+            },
+            "values": {
+                "select": [{
+                    "bind": {
+                        "to": "values"
+                    }
+                }]
+            }
+        }
+    }],
+    "objects": {
+        "barChart": {
+            "displayName": "Bar Chart",
+            "properties": {
+                "fill": {
+                    "displayName": "Color",
+                    "description": "The fill color of bars.",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "isClustered": {
+                    "displayName": "Clustered chart mode",
+                    "displayNameKey": "Clustered_mode",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "gridEnabled": {
+                    "displayName": "Grid Enabled",
+                    "displayNameKey": "Grid_Enabled",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "tooltipEnabled": {
+                    "displayName": "Tooltip Enabled",
+                    "displayNameKey": "Tooltip_Enabled",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        }
+    }
+}
