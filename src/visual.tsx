@@ -26,12 +26,9 @@
 "use strict";
 import "@babel/polyfill";
 import * as React from "react";
-import { MouseEvent } from "react";
-
 import powerbi from "powerbi-visuals-api";
 
 import DataView = powerbi.DataView;
-import IViewport = powerbi.IViewport;
 
 import IVisual = powerbi.extensibility.visual.IVisual;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
@@ -46,9 +43,7 @@ import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
-import { ColorHelper } from "powerbi-visuals-utils-colorutils";
-
-import { VisualState, DataEntry } from "./dataInterfaces";
+import { VisualState } from "./dataInterfaces";
 import { LEGEND_HEIGHT } from "./constants";
 import { VisualSettings } from "./settings";
 import { ReactVisual } from "./reactUtils";
@@ -58,34 +53,14 @@ import { RechartsBarChart } from "./components/RechartsBarChart";
 import { Legend } from "./components/Legend";
 import "./../style/visual.less";
 
-export interface ChartState {
-  isTooltipShown?: boolean;
-  tooltipEntry?: DataEntry;
-}
 
-export class SampleBarChartReact extends React.Component<
-  VisualState,
-  ChartState
-> {
+export class SampleBarChartReact extends React.PureComponent<VisualState> {
   constructor(props: VisualState) {
     super(props);
-    this.showTooltipAction = this.showTooltipAction.bind(this);
-    this.hideTooltipAction = this.hideTooltipAction.bind(this);
-  }
-
-  public state: ChartState = {};
-
-  showTooltipAction(tooltipEntry: DataEntry) {
-    this.setState({ isTooltipShown: true, tooltipEntry });
-  }
-
-  hideTooltipAction() {
-    this.setState({ isTooltipShown: false });
   }
 
   public render() {
     const { viewport, category, settings, entries, measures } = this.props;
-    const { isTooltipShown, tooltipEntry } = this.state;
 
     return viewport && category && settings && entries && measures ? (
       <div className={"bar-chart-wrapper"} style={{ position: "relative" }}>
@@ -114,7 +89,6 @@ export class Visual extends ReactVisual implements IVisual {
   private events: IVisualEventService;
 
   private colorPalette: IColorPalette;
-  private colorHelper: ColorHelper;
 
   private state: VisualState;
 
@@ -133,7 +107,6 @@ export class Visual extends ReactVisual implements IVisual {
 
     this.events = options.host.eventService;
     this.colorPalette = this.visualHost.colorPalette;
-    this.colorHelper = new ColorHelper(this.colorPalette);
   }
 
   protected initializeReact(options: VisualConstructorOptions) {
