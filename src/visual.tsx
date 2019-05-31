@@ -156,24 +156,19 @@ export class Visual extends ReactVisual implements IVisual {
 
     public update(options: VisualUpdateOptions) {
         if (Visual.shouldVisualUpdate(options)) {
-            try {
-                this.events.renderingStarted(options);
+            this.events.renderingStarted(options);
 
-                this.updateVisualProperties(options);
+            this.updateVisualProperties(options);
 
-                this.state = mapOptionsToState(
-                    options,
-                    this.settings,
-                    this.colorPalette
-                );
+            this.state = mapOptionsToState(
+                options,
+                this.settings,
+                this.colorPalette
+            );
 
-                this.updateReactContainers(this.state);
+            this.updateReactContainers(this.state);
 
-                this.events.renderingFinished(options);
-            } catch (e) {
-                console.error(e);
-                this.events.renderingFailed(options);
-            }
+            this.events.renderingFinished(options);
         }
     }
 

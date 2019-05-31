@@ -56,6 +56,12 @@ export interface ChartProps {
     hideTooltip?: () => void;
 }
 
+export interface Tick {
+  x: number;
+  y: number;
+  value: number;
+}
+
 export const BarChart: React.FunctionComponent<ChartProps> = (
     props: ChartProps
 ) => {
@@ -68,19 +74,16 @@ export const BarChart: React.FunctionComponent<ChartProps> = (
         hideTooltip
     } = props;
 
-    if (!props.entries) return <div>No Entries</div>;
+    if (!props.entries) {
+      return (<div>No Entries</div>);
+    }
 
     const labelsWidth = category.maxWidth + LABELS_PADDING;
     const chartHeight = BAR_HEIGHT * props.entries.length;
     const chartWidth = width - labelsWidth - CHART_PADDING;
 
     let entries = props.entries.sort((a: DataEntry, b: DataEntry) =>
-        a.dataPoints[0].value < b.dataPoints[0].value
-        ? 1
-        : ( a.dataPoints[0].value > b.dataPoints[0].value
-            ? -1
-            : 0
-        )
+      a.dataPoints[0].value < b.dataPoints[0].value ? 1 : -1
     );
 
     const maxEntry = entries.reduce(
@@ -89,7 +92,7 @@ export const BarChart: React.FunctionComponent<ChartProps> = (
     );
     const domainMax: number = maxEntry.sum;
 
-    const calculateTicks = (entries, domainMax) => {
+    const calculateTicks = (entries: DataEntry[], domainMax: number) => {
         const pow = String(Math.floor(domainMax)).length - 1;
         const ticksCount = 1 + Number(String(Math.floor(domainMax))[0]);
         const ticks = [];
@@ -101,15 +104,9 @@ export const BarChart: React.FunctionComponent<ChartProps> = (
         return ticks;
     };
 
-    const tickValues = calculateTicks(entries, domainMax);
+    const tickValues: number[] = calculateTicks(entries, domainMax);
 
-    const lines = tickValues.map(value => ({
-        value,
-        y: 0,
-        x: chartWidth * (value / domainMax)
-    }));
-
-    const ticks = tickValues.map(value => ({
+    const ticks: Tick[] = tickValues.map(value => ({
         value,
         y: 0,
         x: chartWidth * (value / domainMax)
@@ -127,7 +124,7 @@ export const BarChart: React.FunctionComponent<ChartProps> = (
                         y={0}
                         height={chartHeight}
                         width={width}
-                        lines={lines}
+                        lines={ticks}
                     />
                     <Bars
                         entries={entries}
