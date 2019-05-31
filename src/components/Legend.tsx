@@ -28,22 +28,25 @@ import { Measure } from "./Measure";
 import { MeasureData } from "../dataInterfaces";
 
 export interface LegendProps {
-    width?: number;
-    height?: number;
-    measures: MeasureData[];
+  width?: number;
+  height?: number;
+  measures: MeasureData[];
 }
 
-export const Legend: React.FunctionComponent<LegendProps> = (props: LegendProps) => {
-    const { measures, width, height } = props;
+export const Legend: React.FunctionComponent<LegendProps> = (
+  props: LegendProps
+) => {
+  const { measures, width, height } = props;
 
-    return (
-        measures &&
-        <div className="chart-legend" style={{ width, height }}>
-            { measures.map((measure) => (
-                <Measure {...measure} />
-            ))}
-        </div>
-    );
+  return (
+    measures && (
+      <div className="chart-legend" style={{ width, height }}>
+        {measures.map(measure => (
+          <Measure {...measure} />
+        ))}
+      </div>
+    )
+  );
 };
 
 export default Legend;

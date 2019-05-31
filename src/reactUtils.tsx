@@ -26,7 +26,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import powerbi from 'powerbi-visuals-api';
+import powerbi from "powerbi-visuals-api";
 
 import IVisual = powerbi.extensibility.visual.IVisual;
 
@@ -38,30 +38,34 @@ interface ContainerProps {
 }
 
 type ContainerState = Readonly<{
-  data: Partial<VisualUpdateOptions>
+  data: Partial<VisualUpdateOptions>;
 }>;
 
 const initialState: ContainerState = {
   data: {}
 };
 
-export class ReactContainer extends React.Component<ContainerProps, ContainerState> {
+export class ReactContainer extends React.Component<
+  ContainerProps,
+  ContainerState
+> {
   private static subscriptions: Array<(data: ContainerState) => void> = [];
 
   private static subscribe(callback: (data: ContainerState) => void) {
     ReactContainer.subscriptions.push(callback);
-    return ReactContainer.createUnsubscribeCallback(ReactContainer.subscriptions.length - 1);
+    return ReactContainer.createUnsubscribeCallback(
+      ReactContainer.subscriptions.length - 1
+    );
   }
 
   private static createUnsubscribeCallback = (i: number) => {
     return () => {
       delete ReactContainer.subscriptions[i];
     };
-  }
+  };
 
   public static update(newData: ContainerState) {
-
-      ReactContainer.subscriptions.forEach(updateCallback => {
+    ReactContainer.subscriptions.forEach(updateCallback => {
       updateCallback(newData);
     });
   }
@@ -76,8 +80,8 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
     this.update = this.update.bind(this);
   }
 
-  public update (newData: ContainerState) {
-    this.setState({ data: { ...this.state.data, ...newData }});
+  public update(newData: ContainerState) {
+    this.setState({ data: { ...this.state.data, ...newData } });
   }
 
   public componentWillMount() {
@@ -91,31 +95,29 @@ export class ReactContainer extends React.Component<ContainerProps, ContainerSta
   render() {
     const props = this.state.data;
     const Component = this.props.component;
-    return (
-      <Component {...props} />
-    );
+    return <Component {...props} />;
   }
 }
 
-
 export abstract class ReactVisual {
-    protected reactTarget: HTMLElement;
-    protected reactRenderer: React.ComponentType;
-    protected reactContainers: React.ComponentType[];
+  protected reactTarget: HTMLElement;
+  protected reactRenderer: React.ComponentType;
+  protected reactContainers: React.ComponentType[];
 
-    protected updateReactContainers: (data: object) => void = ReactContainer.update;
+  protected updateReactContainers: (data: object) => void =
+    ReactContainer.update;
 
-    protected createReactContainer(component: React.ComponentType) {
-        return (props: any) => React.createElement(ReactContainer, { component });
-    }
+  protected createReactContainer(component: React.ComponentType) {
+    return (props: any) => React.createElement(ReactContainer, { component });
+  }
 
-    protected reactMount(): void {
-        ReactDOM.render(React.createElement(this.reactRenderer), this.reactTarget);
-    }
+  protected reactMount(): void {
+    ReactDOM.render(React.createElement(this.reactRenderer), this.reactTarget);
+  }
 
-    public renderer: () => React.ElementType;
+  public renderer: () => React.ElementType;
 
-    constructor(options: VisualConstructorOptions) {
-        this.reactTarget = options.element;
-    }
+  constructor(options: VisualConstructorOptions) {
+    this.reactTarget = options.element;
+  }
 }

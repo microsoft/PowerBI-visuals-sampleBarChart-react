@@ -31,7 +31,7 @@ import { dataViewObjectsParser } from "powerbi-visuals-utils-dataviewutils";
 import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
 
 export class SampleBarChartSettings {
-  public color: string = BAR_COLOR;
+  // public fill: string = BAR_COLOR;
   public isClustered: boolean = false;
   public gridEnabled: boolean = true;
   public tooltipEnabled: boolean = true;
