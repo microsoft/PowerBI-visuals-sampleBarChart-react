@@ -73,9 +73,8 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
 
   if (!props.entries) return <div>No Entries</div>;
 
-  const labelsWidth = category.maxWidth + LABELS_PADDING;
-  const chartHeight = BAR_HEIGHT * props.entries.length;
-  const chartWidth = width - labelsWidth - CHART_PADDING;
+  const labelsWidth: number = category.maxWidth + LABELS_PADDING;
+  const chartHeight: number = BAR_HEIGHT * props.entries.length;
 
   let entries = props.entries
     .map(entry => {
@@ -97,22 +96,50 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
     (acc, v) => (acc.sum > v.sum ? acc : v),
     entries[0]
   );
-  const domainMax: number = maxEntry.sum;
+  const domainMax: number = Math.max(maxEntry.sum, 0);
 
-  const calculateTicks = (entries, domainMax) => {
-    const pow = String(Math.floor(domainMax)).length - 1;
-    const ticksCount = 1 + Number(String(Math.floor(domainMax))[0]);
+  const minEntry = entries.reduce(
+    (acc, v) => (acc.sum < v.sum ? acc : v),
+    entries[0]
+  );
+
+  const domainMin: number = Math.min(minEntry.sum, 0);
+  const domain: number[] = [domainMin, domainMax];
+
+  const calculateTicks = (domainMax: number, domainMin: number) => {
+    const pow = String(
+      Math.floor( Math.max( Math.abs(domainMax), Math.abs(domainMin) ) )
+    ).length - 1;
+
+    const positiveTicksCount = 1 + Number(String(Math.floor(domainMax))[0]);
+    const negativeTicksCount = (domainMin < 0) ? Number(String(Math.floor(Math.abs(domainMin)))[0]) : 0;
+
+    const ticksPerTen = (positiveTicksCount + negativeTicksCount < 5) ? 2 : 1;
+
     const ticks = [];
 
-    for (let i = 0; i < ticksCount; i++) {
+    if (domainMin < 0){
+      for (let i = negativeTicksCount; i > 0; i--) {
+        ticks.push(-i * Math.pow(10, pow));
+        if (ticksPerTen === 2) {
+          ticks.push(-(i + .5) * Math.pow(10, pow));
+        }
+      }
+    }
+
+    for (let i = 0; i < positiveTicksCount; i++) {
       ticks.push(i * Math.pow(10, pow));
+      if (ticksPerTen === 2) {
+        ticks.push((i + .5) * Math.pow(10, pow));
+      }
     }
 
     return ticks;
   };
 
-  const tickValues = calculateTicks(entries, domainMax);
-  const scroll = height - TICKS_HEIGHT - LEGEND_HEIGHT < chartHeight;
+  const tickValues: number[] = calculateTicks(domainMax, domainMin);
+  const scroll: boolean = height - TICKS_HEIGHT - LEGEND_HEIGHT < chartHeight;
+  const chartWidth: number = width - CHART_PADDING;
 
   return (
     <div className="bar-chart">
@@ -124,73 +151,85 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
           overflowY: scroll ? "scroll" : "hidden"
         }}
       >
-        <BarChart
-          className="bar-chart-recharts"
-          layout={"vertical"}
-          height={chartHeight}
-          width={width - CHART_PADDING}
-          data={entries}
-          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+        <div
+        style={{
+          height: chartHeight,
+          width: chartWidth
+        }}
         >
-          {gridEnabled && (
-            <CartesianGrid horizontal={false} stroke={LINE_COLOR} />
-          )}
-          <XAxis
-            dataKey="sum"
-            type="number"
-            domain={[0, domainMax]}
-            interval={0}
-            hide={true}
-            tick={{ fontSize: FONT_SIZE }}
-            ticks={tickValues}
-          />
-          <YAxis
-            dataKey="name"
-            type="category"
-            allowDataOverflow={true}
-            width={labelsWidth}
-            minTickGap={0}
-            interval={0}
-            tick={{
-              fontSize: FONT_SIZE,
-              width: labelsWidth + LABELS_PADDING * 2
-            }}
-            tickMargin={0}
-            ticks={entries.map(entry => entry.name)}
-          />
-          {tooltipEnabled && (
-            <Tooltip
-              animationDuration={300}
-              content={props => {
-                if (
-                  props.payload &&
-                  props.payload[0] &&
-                  props.payload[0].payload
-                ) {
-                  const dataEntry = props.payload[0].payload;
-
-                  return (
-                    dataEntry && (
-                      <TooltipContent
-                        measures={measures}
-                        categoryTitle={category.displayName}
-                        categoryValue={dataEntry.name}
-                        {...dataEntry}
-                      />
-                    )
-                  );
-                }
+          <BarChart
+            className="bar-chart-recharts"
+            layout={"vertical"}
+            height={chartHeight}
+            width={chartWidth}
+            data={entries}
+            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          >
+            {gridEnabled && (
+              <CartesianGrid
+                horizontal={false}
+                stroke={LINE_COLOR}
+                // horizontalPoints={tickValues}
+                // verticalPoints={tickValues.map( (i) => { console.log(i); return ( chartWidth * ( i / domainMax)); })}
+              />
+            )}
+            <XAxis
+              dataKey="sum"
+              type="number"
+              domain={[domainMin, domainMax]}
+              interval={0}
+              hide={true}
+              tick={{ fontSize: FONT_SIZE }}
+              ticks={tickValues}
+            />
+            <YAxis
+              dataKey="name"
+              type="category"
+              allowDataOverflow={true}
+              width={labelsWidth}
+              minTickGap={0}
+              interval={0}
+              tick={{
+                fontSize: FONT_SIZE,
+                width: labelsWidth + LABELS_PADDING * 2
               }}
+              tickMargin={0}
+              ticks={entries.map(entry => entry.name)}
             />
-          )}
-          {measures.map((measure, index) => (
-            <Bar
-              dataKey={`value${index}`}
-              fill={measure.color}
-              stackId={isClustered ? `value${index}` : "stacked"}
-            />
-          ))}
-        </BarChart>
+            {tooltipEnabled && (
+              <Tooltip
+                animationDuration={300}
+                content={props => {
+                  if (
+                    props.payload &&
+                    props.payload[0] &&
+                    props.payload[0].payload
+                  ) {
+                    const dataEntry = props.payload[0].payload;
+
+                    return (
+                      dataEntry && (
+                        <TooltipContent
+                          measures={measures}
+                          categoryTitle={category.displayName}
+                          categoryValue={dataEntry.name}
+                          {...dataEntry}
+                        />
+                      )
+                    );
+                  }
+                }}
+              />
+            )}
+            {measures.map((measure, index) => (
+              <Bar
+                dataKey={`value${index}`}
+                fill={measure.color}
+                stackId={isClustered ? `value${index}` : "stacked"}
+              />
+            ))}
+          </BarChart>
+        </div>
       </div>
       <div className="bar-chart-footer" style={{ height: TICKS_HEIGHT, width }}>
         <BarChart
@@ -211,7 +250,7 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
           <XAxis
             dataKey="sum"
             type="number"
-            domain={[0, domainMax]}
+            domain={[domainMin, domainMax]}
             interval={0}
             tick={{ fontSize: FONT_SIZE }}
             ticks={tickValues}
