@@ -28,6 +28,7 @@ import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 
 import { DataEntry, MeasureData, CategoryData } from "../../dataInterfaces";
 import { TooltipContent } from "../Tooltip";
+import { getStringLength } from "../../helpers";
 
 import {
   TICKS_HEIGHT,
@@ -56,6 +57,7 @@ export interface ChartProps {
   isClustered?: boolean;
   tooltipEnabled?: boolean;
   gridEnabled?: boolean;
+  legendHeight?: number;
 }
 
 export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
@@ -75,6 +77,9 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
 
   const labelsWidth: number = category.maxWidth + LABELS_PADDING;
   const chartHeight: number = BAR_HEIGHT * props.entries.length;
+
+  const legendHeight: number = props.legendHeight || LEGEND_HEIGHT;
+  //(measures.length < 5) ? LEGEND_HEIGHT : 16*Math.floor(measures.length / 2); //TODO GOOD
 
   let entries = props.entries
     .map(entry => {
@@ -118,7 +123,7 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
 
     const ticks = [];
 
-    if (domainMin < 0){
+    if (domainMin < 0) {
       for (let i = negativeTicksCount; i > 0; i--) {
         ticks.push(-i * Math.pow(10, pow));
         if (ticksPerTen === 2) {
@@ -137,23 +142,36 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
     return ticks;
   };
 
-  const tickValues: number[] = calculateTicks(domainMax, domainMin);
-  const scroll: boolean = height - TICKS_HEIGHT - LEGEND_HEIGHT < chartHeight;
+  let tickValues: number[] = calculateTicks(domainMax, domainMin);
+
+  const scroll: boolean = height - TICKS_HEIGHT - legendHeight < chartHeight;
   const chartWidth: number = width - CHART_PADDING;
+
+  const tickWidth: number = chartWidth/ tickValues.length;
+  const largestTick: string = tickValues.reduce( (acc, value) => value.toString().length > acc.length ? value.toString() : acc, '');
+
+  if (tickWidth < getStringLength(largestTick )) {
+    tickValues = tickValues.filter((value, index) => (!(index % 2)) ); //TODO GOOD
+  }
 
   return (
     <div className="bar-chart">
       <div
         className="bar-chart-body"
         style={{
-          height: Math.min(height - TICKS_HEIGHT - LEGEND_HEIGHT, chartHeight),
+          height: Math.min(height - TICKS_HEIGHT - legendHeight, chartHeight),
+          maxHeight: Math.min(height - TICKS_HEIGHT - legendHeight, chartHeight),
           width,
-          overflowY: scroll ? "scroll" : "hidden"
+          overflowY: scroll ? "scroll" : "hidden",
+          position: "relative",
         }}
       >
         <div
         style={{
+          overflow: "hidden",
+          maxHeight: chartHeight,
           height: chartHeight,
+          position: "relative",
           width: chartWidth
         }}
         >
@@ -198,7 +216,7 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
             />
             {tooltipEnabled && (
               <Tooltip
-                animationDuration={300}
+                animationDuration={0}
                 content={props => {
                   if (
                     props.payload &&
@@ -229,7 +247,7 @@ export const RechartsBarChart: React.FunctionComponent<ChartProps> = (
               />
             ))}
           </BarChart>
-        </div>
+          </div>
       </div>
       <div className="bar-chart-footer" style={{ height: TICKS_HEIGHT, width }}>
         <BarChart

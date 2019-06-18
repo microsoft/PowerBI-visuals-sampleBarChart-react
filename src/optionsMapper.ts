@@ -46,10 +46,6 @@ import {
 } from "powerbi-visuals-utils-formattingutils";
 import valueFormatter = vf.valueFormatter;
 import IValueFormatter = vf.IValueFormatter;
-import textMeasurementService = tms.textMeasurementService;
-
-// powerbi-visuals-utils-typeutils
-import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import {
   VisualState,
@@ -60,7 +56,7 @@ import {
   DataPoint
 } from "./dataInterfaces";
 import { VisualSettings } from "./settings";
-import { FONT_SIZE, FONT_FAMILY } from "./constants";
+import { getStringLength } from "./helpers";
 
 const PRECISION: number = 2;
 const DISPLAY_UNITS: number = 0;
@@ -130,13 +126,6 @@ export const mapDataView = (
   const categoryDisplayValues: string[] = category.values.map(
     (value: PrimitiveValue) => categoriesFormatter.format(value)
   );
-
-  const getStringLength = (text: string) =>
-    textMeasurementService.measureSvgTextWidth({
-      text,
-      fontFamily: FONT_FAMILY,
-      fontSize: PixelConverter.toString(FONT_SIZE)
-    });
 
   const maxCategoryNameWidth: number = categoryDisplayValues.reduce(
     (acc: number, value: string) =>

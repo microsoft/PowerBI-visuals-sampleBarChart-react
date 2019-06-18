@@ -53,10 +53,19 @@ import { RechartsBarChart } from "./components/RechartsBarChart";
 import { Legend } from "./components/Legend";
 import "./../style/visual.less";
 
+export interface ChartState {
+  legendHeight?: number;
+};
 
-export class SampleBarChartReact extends React.PureComponent<VisualState> {
+export class SampleBarChartReact extends React.PureComponent<VisualState, ChartState> {
   constructor(props: VisualState) {
     super(props);
+  }
+
+  public state: ChartState = {};
+
+  public setLegendHeight = (legendHeight: number) => {
+    this.setState({ legendHeight });
   }
 
   public render() {
@@ -64,13 +73,17 @@ export class SampleBarChartReact extends React.PureComponent<VisualState> {
 
     return viewport && category && settings && entries && measures ? (
       <div className={"bar-chart-wrapper"} style={{ position: "relative" }}>
-        <Legend {...{ ...viewport, height: LEGEND_HEIGHT, measures }} />
+        <Legend
+          reportHeight={this.setLegendHeight}
+          measures={measures}
+        />
         <RechartsBarChart
           {...{
             ...viewport,
             measures,
             entries,
             category,
+            legendHeight: this.state.legendHeight || LEGEND_HEIGHT,
             isClustered: settings.isClustered,
             tooltipEnabled: settings.tooltipEnabled,
             gridEnabled: settings.gridEnabled

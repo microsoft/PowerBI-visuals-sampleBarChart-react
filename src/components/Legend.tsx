@@ -28,25 +28,38 @@ import { Measure } from "./Measure";
 import { MeasureData } from "../dataInterfaces";
 
 export interface LegendProps {
-  width?: number;
-  height?: number;
   measures: MeasureData[];
+  reportHeight?: (legendHeight: number) => void;
 }
 
-export const Legend: React.FunctionComponent<LegendProps> = (
-  props: LegendProps
-) => {
-  const { measures, width, height } = props;
+export class Legend extends React.PureComponent<LegendProps>{
 
-  return (
-    measures && (
-      <div className="chart-legend" style={{ width, height }}>
-        {measures.map(measure => (
-          <Measure {...measure} />
-        ))}
-      </div>
-    )
-  );
-};
+  constructor(props: LegendProps) {
+    super(props);
+  }
+
+  public componentDidMount() {
+    if (this.legendRef.current && this.props.reportHeight) {
+      this.props.reportHeight(this.legendRef.current.offsetHeight );
+    }
+  }
+
+  private legendRef = React.createRef<any>();
+
+  public render() {
+    const { measures } = this.props;
+
+    return (
+        <div
+          ref={this.legendRef}
+          className="chart-legend"
+        >
+          {measures.map(measure => (
+            <Measure {...measure} />
+          ))}
+        </div>
+    );
+  }
+}
 
 export default Legend;
