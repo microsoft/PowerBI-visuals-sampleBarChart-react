@@ -1,0 +1,49 @@
+{
+  "name": "visual",
+  "version": "1.0.1",
+  "scripts": {
+    "pbiviz": "pbiviz",
+    "start": "pbiviz start",
+    "package": "pbiviz package",
+    "cert": "pbiviz --create-cert",
+    "lint": "npm run lint:ts && npm run lint:less",
+    "lint:ts": "node node_modules/tslint/bin/tslint -r \"node_modules/tslint-microsoft-contrib\" \"+(src|test)/**/*.ts?\"",
+    "lint:less": "stylelint -s less \"style/**/*.less\"",
+    "test": "jest --env=jsdom"
+  },
+  "dependencies": {
+    "@babel/polyfill": "7.0.0",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/runtime": "^7.2.0",
+    "@babel/runtime-corejs2": "^7.2.0",
+    "babel-jest": "^24.8.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "powerbi-visuals-api": "^2.6.0",
+    "powerbi-visuals-utils-colorutils": "^2.1.0",
+    "powerbi-visuals-utils-dataviewutils": "2.0.1",
+    "powerbi-visuals-utils-formattingutils": "^4.2.0",
+    "powerbi-visuals-utils-typeutils": "^2.1.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "recharts": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/d3": "^5.7.2",
+    "@types/enzyme": "^3.1.18",
+    "@types/jest": "^24.0.13",
+    "@types/react": "^16.8.13",
+    "@types/react-dom": "^16.8.4",
+    "@types/recharts": "^1.1.16",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.9.1",
+    "jest": "^24.8.0",
+    "less": "^3.9.0",
+    "react-test-renderer": "^16.8.2",
+    "stylelint": "^10.0.1",
+    "ts-jest": "^23.10.5",
+    "ts-loader": "4.5.0",
+    "tslint": "^5.16.0",
+    "tslint-microsoft-contrib": "^6.1.1",
+    "typescript": "3.0.1"
+  }
+}
