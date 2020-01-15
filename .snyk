@@ -70,6 +70,12 @@ patch:
         patched: '2020-01-15T10:22:12.411Z'
     - snyk > @snyk/dep-graph > graphlib > lodash:
         patched: '2020-01-15T10:22:12.411Z'
+    - snyk > @snyk/snyk-cocoapods-plugin > @snyk/dep-graph > lodash:
+        patched: '2020-01-15T10:25:27.061Z'
+    - snyk > snyk-nuget-plugin > dotnet-deps-parser > lodash:
+        patched: '2020-01-15T10:25:27.061Z'
+    - snyk > @snyk/snyk-cocoapods-plugin > @snyk/cocoapods-lockfile-parser > @snyk/dep-graph > lodash:
+        patched: '2020-01-15T10:25:27.061Z'
   SNYK-JS-HTTPSPROXYAGENT-469131:
     - snyk > proxy-agent > https-proxy-agent:
         patched: '2020-01-15T10:22:12.411Z'
