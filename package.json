@@ -27,7 +27,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "recharts": "^1.6.0",
-    "snyk": "^1.278.1"
+    "snyk": "^1.1140.0"
   },
   "devDependencies": {
     "@types/d3": "^5.7.2",
