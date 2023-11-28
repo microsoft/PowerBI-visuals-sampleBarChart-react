@@ -17,7 +17,7 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/runtime": "^7.2.0",
     "@babel/runtime-corejs2": "^7.2.0",
-    "babel-jest": "^24.8.0",
+    "babel-jest": "^27.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "powerbi-visuals-api": "^2.6.0",
     "powerbi-visuals-utils-colorutils": "^2.1.0",
@@ -27,7 +27,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "recharts": "^1.6.0",
-    "snyk": "^1.278.1"
+    "snyk": "^1.685.0"
   },
   "devDependencies": {
     "@types/d3": "^5.7.2",
